@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/bruc3mackenzi3/microservice-demo/src/handler"
 	"github.com/labstack/echo"
 )
 
@@ -14,6 +15,8 @@ func setupServer() {
 	e.GET("/", func(c echo.Context) error {
 		return c.String(http.StatusOK, "Hello, World!")
 	})
+
+	handler.RegisterRoutes(e)
 
 	err := e.Start(fmt.Sprintf(":%d", port))
 	if err != nil {
