@@ -1,0 +1,31 @@
+FROM golang:1.17-buster AS build
+
+# Multistage build builds separate images in build and deploy stage,
+# resulting in a ~10x smaller image
+# Example abstracted from https://docs.docker.com/language/golang/build-images/
+
+##
+## Build
+##
+
+WORKDIR /app
+
+COPY ./ ./
+
+RUN go mod download
+RUN go build -o microservice-app
+
+##
+## Deploy
+##
+FROM gcr.io/distroless/base-debian10
+
+WORKDIR /app
+
+COPY --from=build /app/microservice-app microservice-app
+
+EXPOSE 8080
+
+USER nonroot:nonroot
+
+ENTRYPOINT ["./microservice-app"]
