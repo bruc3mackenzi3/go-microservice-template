@@ -1,6 +1,6 @@
 services:
-
   postgres:
+    container_name: postgres-db
     image: postgres:14
     restart: always
     environment:
@@ -20,6 +20,7 @@ services:
     ports:
     - 8080:80
     environment:
+      PGHOST: localhost
       PGDB: microservice
       PGUSER: microservice
       PGPASSWORD: example123

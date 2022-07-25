@@ -3,7 +3,7 @@ package handler
 import (
 	"net/http"
 
-	"github.com/bruc3mackenzi3/microservice-demo/src/service"
+	"github.com/bruc3mackenzi3/microservice-demo/service"
 	"github.com/labstack/echo"
 )
 

@@ -1,0 +1,12 @@
+BEGIN;
+
+CREATE SCHEMA IF NOT EXISTS users;
+
+CREATE TABLE IF NOT EXISTS users (
+    id serial PRIMARY KEY,
+    name VARCHAR ( 50 ) UNIQUE NOT NULL,
+    created_at TIMESTAMP,
+    updated_at TIMESTAMP
+);
+
+COMMIT;

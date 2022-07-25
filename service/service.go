@@ -3,8 +3,8 @@ package service
 import (
 	"fmt"
 
-	"github.com/bruc3mackenzi3/microservice-demo/src/model"
-	"github.com/bruc3mackenzi3/microservice-demo/src/repository"
+	"github.com/bruc3mackenzi3/microservice-demo/model"
+	"github.com/bruc3mackenzi3/microservice-demo/repository"
 )
 
 type Service interface {

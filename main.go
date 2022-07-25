@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/bruc3mackenzi3/microservice-demo/src/handler"
+	"github.com/bruc3mackenzi3/microservice-demo/handler"
 	"github.com/labstack/echo"
 )
 
