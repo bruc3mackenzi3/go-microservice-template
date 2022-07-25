@@ -1,5 +1,8 @@
 package model
 
+import "gorm.io/gorm"
+
 type User struct {
-	name string
+	gorm.Model
+	Name string
 }

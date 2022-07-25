@@ -13,9 +13,26 @@ func init() {
 	mService = service.NewService()
 }
 
+type errorResponse struct {
+	Status  int    `json:"status"`
+	Message string `json:"message"`
+}
+
+type postUserResponse struct {
+	Id string `json:"name"`
+}
+
 func postUser(c echo.Context) error {
-	mService.CreateUser("")
-	return c.String(http.StatusOK, "POST user called")
+	name := c.Param("name")
+	var response postUserResponse
+	var err error
+
+	response.Id, err = mService.CreateUser(name)
+	if err != nil {
+		r := errorResponse{500, "server error occured"}
+		return c.JSON(r.Status, r)
+	}
+	return c.JSON(http.StatusOK, response)
 }
 
 func getUser(c echo.Context) error {
