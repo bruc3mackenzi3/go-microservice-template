@@ -1,8 +1,11 @@
 package handler
 
 import (
+	"fmt"
 	"net/http"
+	"strconv"
 
+	"github.com/bruc3mackenzi3/microservice-demo/model"
 	"github.com/bruc3mackenzi3/microservice-demo/service"
 	"github.com/labstack/echo"
 )
@@ -27,7 +30,7 @@ type getUserResponse struct {
 }
 
 func postUser(c echo.Context) error {
-	name := c.Param("name")
+	name := c.Param("id")
 	var response postUserResponse
 	var err error
 
@@ -40,10 +43,22 @@ func postUser(c echo.Context) error {
 }
 
 func getUser(c echo.Context) error {
-	id := c.Param("id")
-	user, err := mService.GetUser(id)
+	id, err := strconv.Atoi(c.Param("id"))
+	if err != nil || id < 0 {
+		fmt.Printf("Invalid id argument value='%s' supplied: %v", c.Param("id"), err)
+		r := errorResponse{400, "id must be an unsigned integer"}
+		return c.JSON(r.Status, r)
+	}
+
+	user, err := mService.GetUser(uint(id))
 	if err != nil {
-		r := errorResponse{500, "server error occured"}
+		var r errorResponse
+		_, ok := err.(model.NotFoundError)
+		if ok {
+			r = errorResponse{404, "user not found"}
+		} else {
+			r = errorResponse{500, "server error occured"}
+		}
 		return c.JSON(r.Status, r)
 	}
 

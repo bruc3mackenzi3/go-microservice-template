@@ -12,7 +12,7 @@ import (
 
 type Repository interface {
 	InsertUser(user *model.User) error
-	SelectUser(id string) (*model.User, error)
+	SelectUser(id uint) (*model.User, error)
 }
 
 type repository struct {
@@ -55,13 +55,17 @@ func (r *repository) InsertUser(user *model.User) error {
 	return nil
 }
 
-func (r *repository) SelectUser(id string) (*model.User, error) {
+func (r *repository) SelectUser(id uint) (*model.User, error) {
 	var user model.User
-	// TODO figure out why passing empty string returns a record
 	result := r.db.First(&user, id)
-	// TODO implement NotFoundError returning a 404
+
 	if result.Error != nil {
-		fmt.Println("Error creating user in database:", result.Error)
+		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+			fmt.Println("User not found")
+			return nil, model.NewNotFoundError(fmt.Sprintf("User %d not found", id))
+		}
+
+		fmt.Println("Error selecting user in database:", result.Error)
 		return nil, errors.New("Failed to select user")
 	}
 	return &user, nil
