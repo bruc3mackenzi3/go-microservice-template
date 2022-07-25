@@ -19,7 +19,11 @@ type errorResponse struct {
 }
 
 type postUserResponse struct {
-	Id string `json:"name"`
+	ID string `json:"id"`
+}
+
+type getUserResponse struct {
+	Name string `json:"name"`
 }
 
 func postUser(c echo.Context) error {
@@ -27,7 +31,7 @@ func postUser(c echo.Context) error {
 	var response postUserResponse
 	var err error
 
-	response.Id, err = mService.CreateUser(name)
+	response.ID, err = mService.CreateUser(name)
 	if err != nil {
 		r := errorResponse{500, "server error occured"}
 		return c.JSON(r.Status, r)
@@ -36,8 +40,16 @@ func postUser(c echo.Context) error {
 }
 
 func getUser(c echo.Context) error {
-	mService.GetUser("")
-	return c.String(http.StatusOK, "GET user called")
+	id := c.Param("id")
+	user, err := mService.GetUser(id)
+	if err != nil {
+		r := errorResponse{500, "server error occured"}
+		return c.JSON(r.Status, r)
+	}
+
+	response := getUserResponse{user.Name}
+
+	return c.JSON(http.StatusOK, response)
 }
 
 func deleteUser(c echo.Context) error {

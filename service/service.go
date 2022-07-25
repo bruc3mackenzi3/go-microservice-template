@@ -10,7 +10,7 @@ import (
 
 type Service interface {
 	CreateUser(name string) (string, error)
-	GetUser(id string) (model.User, error)
+	GetUser(id string) (*model.User, error)
 }
 
 type service struct {
@@ -24,8 +24,6 @@ func NewService() Service {
 }
 
 func (s *service) CreateUser(name string) (string, error) {
-	fmt.Println("DEBUG: Service CreateUser called")
-
 	user := model.User{Name: name}
 	err := s.r.InsertUser(&user)
 	if err != nil {
@@ -37,7 +35,7 @@ func (s *service) CreateUser(name string) (string, error) {
 	return strconv.Itoa(int(user.ID)), err
 }
 
-func (s *service) GetUser(id string) (model.User, error) {
+func (s *service) GetUser(id string) (*model.User, error) {
 	fmt.Println("DEBUG: Service GetUser called")
 
 	user, err := s.r.SelectUser(id)
