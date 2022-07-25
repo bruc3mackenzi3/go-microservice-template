@@ -37,8 +37,8 @@ func NewRepository() Repository {
 
 	err = db.AutoMigrate(model.User{})
 	if err != nil {
-		fmt.Println("GORM AutoMigrate failed", err)
-		panic("GORM AutoMigrate failed")
+		// AutoMigrate errors trying to create a unique constraint on User.Name
+		fmt.Println("GORM AutoMigrate returned error:", err)
 	}
 
 	return &repository{

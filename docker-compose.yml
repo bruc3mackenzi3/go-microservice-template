@@ -3,12 +3,12 @@ services:
     container_name: postgres-db
     image: postgres:14
     restart: always
+    ports:
+    - 5432:5432
     environment:
       POSTGRES_DB: microservice
       POSTGRES_USER: microservice
       POSTGRES_PASSWORD: example123
-    ports:
-    - 5432:5432
 
   app:
     depends_on:
@@ -20,7 +20,7 @@ services:
     ports:
     - 8080:80
     environment:
-      PGHOST: localhost
+      PGHOST: postgres-db
       PGDB: microservice
       PGUSER: microservice
       PGPASSWORD: example123
