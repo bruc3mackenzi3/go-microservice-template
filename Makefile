@@ -1,5 +1,5 @@
 build:
-	docker build --tag microservice-demo .
+	docker-compose build
 
 build-multistage:
 	docker build --tag microservice-demo:multistage -f Dockerfile.multistage .
@@ -8,15 +8,19 @@ build-local:
 	go build -v
 
 start:
-	docker run --publish 8080:8080 --detatch microservice-demo --name microserver
+	docker-compose up --detatch
 
 stop:
-	docker stop microserver
+	docker-compose down
 
 run:
 	./microservice-demo
 
 clean:
 	go clean ./...
-	docker rm microserver
-	docker rmi microservice-demo
+	# docker-compose rm --force
+
+nuke:
+	rm -rf vendor/
+	docker rmi
+	docker rmi microservice-demo postgres:14

@@ -8,7 +8,7 @@ import (
 	"github.com/labstack/echo"
 )
 
-const port = 8080
+const port = 80
 
 func setupServer() {
 	e := echo.New()

@@ -1,0 +1,25 @@
+services:
+
+  postgres:
+    image: postgres:14
+    restart: always
+    environment:
+      POSTGRES_DB: microservice
+      POSTGRES_USER: microservice
+      POSTGRES_PASSWORD: example123
+    ports:
+    - 5432:5432
+
+  app:
+    depends_on:
+    - postgres
+    build:
+      context: .
+    container_name: microserver
+    image: microservice-demo
+    ports:
+    - 8080:80
+    environment:
+      PGDB: microservice
+      PGUSER: microservice
+      PGPASSWORD: example123

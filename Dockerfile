@@ -9,6 +9,6 @@ COPY ./ ./
 RUN go mod download
 RUN go build -o microservice-app
 
-EXPOSE 8080
+EXPOSE 80
 
 CMD [ "./microservice-app" ]
