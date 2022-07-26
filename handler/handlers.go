@@ -6,6 +6,7 @@ import (
 	"strconv"
 
 	"github.com/bruc3mackenzi3/microservice-demo/model"
+	"github.com/bruc3mackenzi3/microservice-demo/repository"
 	"github.com/bruc3mackenzi3/microservice-demo/service"
 	"github.com/labstack/echo"
 )
@@ -13,7 +14,7 @@ import (
 var mService service.Service
 
 func init() {
-	mService = service.NewService()
+	mService = service.NewService(repository.NewRepository())
 }
 
 type errorResponse struct {
