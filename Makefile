@@ -45,6 +45,9 @@ run:
 	PGHOST=$(PGHOST) PGDB=$(PGDB) PGUSER=$(PGUSER) PGPASSWORD=$(PGPASSWORD) \
 	./microservice-demo
 
+test:
+	go test -v ./...
+
 clean:
 	go clean ./...
 	docker-compose rm --force
