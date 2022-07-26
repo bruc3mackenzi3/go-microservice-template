@@ -1,26 +1,38 @@
 services:
-  postgres:
+  postgres-db:
     container_name: postgres-db
     image: postgres:14
+    profiles:
+    - platform
     restart: always
     ports:
     - 5432:5432
+    networks:
+      microservice_network:
     environment:
       POSTGRES_DB: microservice
       POSTGRES_USER: microservice
       POSTGRES_PASSWORD: example123
 
   app:
-    depends_on:
-    - postgres
+    # depends_on:
+    # - postgres-db
     build:
       context: .
     container_name: microserver
     image: microservice-demo
+    profiles:
+    - application
     ports:
     - 8080:80
+    networks:
+      microservice_network:
     environment:
       PGHOST: postgres-db
       PGDB: microservice
       PGUSER: microservice
       PGPASSWORD: example123
+
+networks:
+  microservice_network:
+    name: microservice_network

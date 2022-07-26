@@ -16,6 +16,14 @@
                 "PGUSER": "microservice",
                 "PGPASSWORD": "example123"
             }
+        },
+        {
+            "name": "Remote Microservice",
+            "type": "go",
+            "request": "attach",
+            "mode": "remote",
+            "port": 4000,
+            "host": "127.0.0.1"
         }
     ]
 }
