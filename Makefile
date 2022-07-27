@@ -4,25 +4,37 @@ PGDB = microservice
 PGUSER = microservice
 PGPASSWORD = example123
 
-build:
-	docker-compose build
+# help extracts the help texts for the comments following ': ##'
+.PHONY: help
+help: ## Print this help message
+	@awk -F':.*## ' ' \
+		/^[[:alpha:]_-]+:.*## / { \
+			printf "\033[36m%s\033[0m\t%s\n", $$1, $$2 \
+		} \
+	' $(MAKEFILE_LIST) | column -s$$'\t' -t
 
-build-multistage:
-	docker build --tag microservice-demo:multistage -f Dockerfile.multistage .
-
-build-local:
+build:  ## Compile Go program
 	go build -v
 
-start-platform:
+build-multistage:  ## Minimal Docker build resulting in a much smaller container
+	docker build --tag microservice-demo:multistage -f Dockerfile.multistage .
+
+start-platform:  ## Build & start platform container(s)
+	docker-compose build
 	docker-compose --profile platform up --detach
 
-start:
+run:  ## Run application natively
+	PGHOST=$(PGHOST) PGDB=$(PGDB) PGUSER=$(PGUSER) PGPASSWORD=$(PGPASSWORD) \
+	go run main.go
+
+start:  ## Start application container(s)
 	docker-compose --profile application up --detach
 	# These commands seed the database; currently disabled in favour of GORM AutoMigrate
 	# docker cp ./sql/seed.sql $(POSTGRES_CONTAINER):/docker-entrypoint-initdb.d/seed.sql
 	# docker exec -u postgres $(POSTGRES_CONTAINER) psql $(PGDB) $(PGUSER) -f docker-entrypoint-initdb.d/seed.sql
 
-start-debug:
+start-debug:  ## Restart app in debug mode with Delve debugger
+	docker-compose --profile application stop
 	docker rm --force microserver-debug
 	docker build -f Dockerfile.debug --tag debug .
 	docker run --name microserver-debug \
@@ -35,25 +47,21 @@ start-debug:
 		--publish 4000:4000 \
 		debug
 
-stop:
+stop:  ## Stop application container(s)
 	docker-compose --profile application stop
 
-stop-platform:
+stop-platform:  ## Stop platform container(s)
 	docker-compose --profile platform stop
 
-run:
-	PGHOST=$(PGHOST) PGDB=$(PGDB) PGUSER=$(PGUSER) PGPASSWORD=$(PGPASSWORD) \
-	./microservice-demo
-
-test:
+test:  ## Run test suite
 	go test -v ./...
 
-clean:
+clean:  ## Clean project
 	go clean ./...
 	docker-compose rm --force
 	docker rm --force microserver-debug
 
-nuke:
+nuke:  ## Remove all data generated with the project
 	rm -rf vendor/
 	docker rmi microservice-demo postgres:14
 	docker network rm microservice_network

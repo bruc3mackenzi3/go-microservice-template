@@ -1,5 +1,5 @@
-# microservice-demo
-A microservice implementation for demonstration purposes
+# go-microservice-template
+A full-featured microservice template.
 
 ![example workflow](https://github.com/bruc3mackenzi3/microservice-demo/actions/workflows/go.yml/badge.svg)
 
@@ -19,6 +19,20 @@ A microservice implementation for demonstration purposes
     * Debugging native application
     * Debugging in Docker container using [Delve debugger](https://github.com/go-delve/delve)
 * GitHub Actions to run build & tests
+
+## Getting Started
+* Build & start the platform container(s) with `make start-platform`
+* Run the microservice app with `make run`
+* Run the microservice app in Docker with `make start`, stop with `make stop`
+* Execute unit tests with `make test`
+* Stop the platform with `make stop-platform`
+* Get help with all make commands with `make help`
+
+Query the application using Curl:
+```bash
+curl -X POST http://localhost/users/Bruce
+curl http://localhost/users/1
+```
 
 ## ToDo
 * Logging
