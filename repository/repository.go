@@ -50,7 +50,7 @@ func (r *repository) InsertUser(user *model.User) error {
 	result := r.db.Create(&user)
 	if result.Error != nil {
 		fmt.Println("Error creating user in database:", result.Error)
-		return errors.New("Failed to create user")
+		return errors.New("failed to create user")
 	}
 	return nil
 }
@@ -66,7 +66,7 @@ func (r *repository) SelectUser(id uint) (*model.User, error) {
 		}
 
 		fmt.Println("Error selecting user in database:", result.Error)
-		return nil, errors.New("Failed to select user")
+		return nil, errors.New("failed to select user")
 	}
 	return &user, nil
 }

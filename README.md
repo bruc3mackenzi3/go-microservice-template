@@ -10,6 +10,7 @@ A microservice implementation for demonstration purposes
   * [Echo web framework](https://github.com/labstack/echo)
   * [GORM ORM Library](https://github.com/go-gorm/gorm)
   * [Testify](https://github.com/stretchr/testify) Assert and Mock packages
+  * golangci-lint with `.golangci.yml` config and VSCode `settings.json` integration
 * PostgreSQL 14 database
 * Docker for containerizing the application
 * Docker Compose for container orchestration
@@ -24,7 +25,7 @@ A microservice implementation for demonstration purposes
 * Context
 * Integration tests
 * Test line coverage report
-* Linting
+* Interservice communication e.g. with gRPC
 * (CICD)[https://docs.docker.com/language/golang/configure-ci-cd/]
 * GitHub integrations
 * Cloud deployment
