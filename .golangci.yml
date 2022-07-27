@@ -1,0 +1,65 @@
+run:
+  concurrency: 10
+  timeout: 1m
+  tests: true
+  skip-dirs-use-default: true
+  issues-exit-code: 1
+
+output:
+  format: colored-line-number
+  print-issued-lines: true
+  print-linter-name: true
+  uniq-by-line: true
+  path-prefix: ""
+  sort-results: false
+  print-resources-usage: true
+
+linters-settings:
+  govet:
+    check-shadowing: false
+    fieldalignment: true
+  gocyclo:
+    min-complexity: 15
+  dupl:
+    threshold: 150
+  goconst:
+    min-len: 2
+    min-occurrences: 4
+  funlen:
+    lines: 160
+    statements: 60
+  gosimple:
+    go: "1.17"
+    checks: ["all"]
+  staticcheck:
+    go: "1.17"
+    checks: ["all"]
+
+linters:
+  disable-all: true
+  enable:
+    - deadcode
+    - depguard
+    - dogsled
+    - errcheck
+    - funlen
+    - goconst
+    - gocritic
+    - gocyclo
+    - gofmt
+    - goimports
+    - gosec
+    - gosimple
+    - exportloopref
+    - revive
+    - govet
+    - ineffassign
+    - nakedret
+    - staticcheck
+    - structcheck
+    - stylecheck
+    - typecheck
+    - unconvert
+    - unused
+    - varcheck
+    - dupl
