@@ -31,12 +31,20 @@ type errorResponse struct {
 	Message string `json:"message"`
 }
 
-type postUserResponse struct {
-	ID string `json:"id"`
+type userResponse struct {
+	ID    string `json:"id"`
+	Name  string `json:"name"`
+	Email string `json:"email"`
+	Phone string `json:"phone"`
 }
 
-type getUserResponse struct {
-	Name string `json:"name"`
+func newUserResponseFromModel(u *model.User) userResponse {
+	return userResponse{
+		ID:    strconv.Itoa(int(u.ID)),
+		Name:  u.Name,
+		Email: u.Email,
+		Phone: u.Phone,
+	}
 }
 
 func postUser(c echo.Context) error {
@@ -64,8 +72,7 @@ func postUser(c echo.Context) error {
 		Phone: rUser.Phone,
 	}
 
-	var response postUserResponse
-	response.ID, err = mService.CreateUser(user)
+	err = mService.CreateUser(&user)
 	if err == model.ErrUserEmailTaken {
 		c.Logger().Warnf("Cannot create user, email %s already taken", user.Email)
 		r := errorResponse{400, "email already taken"}
@@ -76,6 +83,8 @@ func postUser(c echo.Context) error {
 		r := errorResponse{500, "server error occured"}
 		return c.JSON(r.Status, r)
 	}
+
+	response := newUserResponseFromModel(&user)
 	return c.JSON(http.StatusOK, response)
 }
 
@@ -98,8 +107,7 @@ func getUser(c echo.Context) error {
 		return c.JSON(r.Status, r)
 	}
 
-	response := getUserResponse{user.Name}
-
+	response := newUserResponseFromModel(user)
 	return c.JSON(http.StatusOK, response)
 }
 

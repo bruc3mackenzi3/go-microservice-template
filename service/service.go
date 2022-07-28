@@ -2,14 +2,13 @@ package service
 
 import (
 	"fmt"
-	"strconv"
 
 	"github.com/bruc3mackenzi3/microservice-demo/model"
 	"github.com/bruc3mackenzi3/microservice-demo/repository"
 )
 
 type Service interface {
-	CreateUser(user model.User) (string, error)
+	CreateUser(user *model.User) error
 	GetUser(id uint) (*model.User, error)
 }
 
@@ -23,22 +22,22 @@ func NewService(r repository.Repository) Service {
 	}
 }
 
-func (s *service) CreateUser(user model.User) (string, error) {
+func (s *service) CreateUser(user *model.User) error {
 	// Check if email is in use by an existing user
 	_, err := s.r.SelectUserByEmail(user.Email)
 	if err == nil {
-		return "", model.ErrUserEmailTaken
+		return model.ErrUserEmailTaken
 	} else if err != model.ErrUserNotFound {
-		return "", err
+		return err
 	}
 
-	err = s.r.InsertUser(&user)
+	err = s.r.InsertUser(user)
 	if err != nil {
-		return "", err
+		return err
 	}
 
 	fmt.Printf("Created new user: %+v\n", user)
-	return strconv.Itoa(int(user.ID)), err
+	return nil
 }
 
 func (s *service) GetUser(id uint) (*model.User, error) {
