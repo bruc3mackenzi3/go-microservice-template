@@ -21,8 +21,10 @@ A full-featured microservice template.
 * GitHub Actions to run build & tests
 
 ## Getting Started
+* Fetch Go dependencies with `make init`
+* Compile the Go application with `make build`
 * Build & start the platform container(s) with `make start-platform`
-* Run the microservice app with `make run`
+* Run the microservice app directly with `make run`
 * Run the microservice app in Docker with `make start`, stop with `make stop`
 * Execute unit tests with `make test`
 * Stop the platform with `make stop-platform`
