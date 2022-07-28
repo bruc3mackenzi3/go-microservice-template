@@ -1,20 +1,29 @@
 package handler
 
 import (
-	"fmt"
 	"net/http"
 	"strconv"
+	"strings"
 
 	"github.com/bruc3mackenzi3/microservice-demo/model"
 	"github.com/bruc3mackenzi3/microservice-demo/repository"
 	"github.com/bruc3mackenzi3/microservice-demo/service"
+	"github.com/go-playground/validator/v10"
 	"github.com/labstack/echo"
 )
 
+var validate *validator.Validate
 var mService service.Service
 
 func init() {
+	validate = validator.New()
 	mService = service.NewService(repository.NewRepository())
+}
+
+type userRequestBody struct {
+	Name  string `json:"name" validate:"required"`
+	Email string `json:"email" validate:"required"`
+	Phone string `json:"phone"`
 }
 
 type errorResponse struct {
@@ -31,12 +40,39 @@ type getUserResponse struct {
 }
 
 func postUser(c echo.Context) error {
-	name := c.Param("id")
-	var response postUserResponse
-	var err error
+	var rUser userRequestBody
 
-	response.ID, err = mService.CreateUser(name)
+	// Parse request body to struct; will catch malformed JSON errors
+	err := c.Bind(&rUser)
 	if err != nil {
+		c.Logger().Warn("Failed to decode request body: ", err)
+		r := errorResponse{400, "bad request"}
+		return c.JSON(r.Status, r)
+	}
+
+	// Validate struct based on validate tags in struct definition
+	err = validate.Struct(rUser)
+	if err != nil {
+		c.Logger().Warn("Failed to validate request struct: ", err)
+		r := errorResponse{400, "bad request"}
+		return c.JSON(r.Status, r)
+	}
+
+	user := model.User{
+		Name:  rUser.Name,
+		Email: strings.ToLower(rUser.Email),
+		Phone: rUser.Phone,
+	}
+
+	var response postUserResponse
+	response.ID, err = mService.CreateUser(user)
+	if err == model.ErrUserEmailTaken {
+		c.Logger().Warnf("Cannot create user, email %s already taken", user.Email)
+		r := errorResponse{400, "email already taken"}
+		return c.JSON(r.Status, r)
+	}
+	if err != nil {
+		c.Logger().Error("Failed to create user: ", err)
 		r := errorResponse{500, "server error occured"}
 		return c.JSON(r.Status, r)
 	}
@@ -46,7 +82,7 @@ func postUser(c echo.Context) error {
 func getUser(c echo.Context) error {
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil || id < 0 {
-		fmt.Printf("Invalid id argument value='%s' supplied: %v", c.Param("id"), err)
+		c.Logger().Warn("Invalid id argument value='%s' supplied: %v", c.Param("id"), err)
 		r := errorResponse{400, "id must be an unsigned integer"}
 		return c.JSON(r.Status, r)
 	}
@@ -54,10 +90,9 @@ func getUser(c echo.Context) error {
 	user, err := mService.GetUser(uint(id))
 	if err != nil {
 		var r errorResponse
-		_, ok := err.(model.NotFoundError)
-		if ok {
+		if err == model.ErrUserNotFound {
 			r = errorResponse{404, "user not found"}
-		} else {
+		} else if err != nil {
 			r = errorResponse{500, "server error occured"}
 		}
 		return c.JSON(r.Status, r)

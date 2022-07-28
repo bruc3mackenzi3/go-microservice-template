@@ -2,6 +2,8 @@ package config
 
 import "os"
 
+const Port = 80
+
 var Env Environment
 
 type Environment struct {

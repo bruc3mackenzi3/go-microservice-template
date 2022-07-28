@@ -4,11 +4,11 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/bruc3mackenzi3/microservice-demo/config"
 	"github.com/bruc3mackenzi3/microservice-demo/handler"
 	"github.com/labstack/echo"
+	"github.com/labstack/gommon/log"
 )
-
-const port = 80
 
 func setupServer() {
 	e := echo.New()
@@ -18,14 +18,16 @@ func setupServer() {
 
 	handler.RegisterRoutes(e)
 
-	err := e.Start(fmt.Sprintf(":%d", port))
+	e.Logger.SetLevel(log.DEBUG)
+
+	err := e.Start(fmt.Sprintf(":%d", config.Port))
 	if err != nil {
 		e.Logger.Fatal(err)
 	}
 }
 
 func main() {
-	fmt.Printf("Starting web server on port %d...\n", port)
+	fmt.Printf("Starting web server on port %d...\n", config.Port)
 
 	setupServer()
 }

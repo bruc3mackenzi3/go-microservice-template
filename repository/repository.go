@@ -13,6 +13,7 @@ import (
 type Repository interface {
 	InsertUser(user *model.User) error
 	SelectUser(id uint) (*model.User, error)
+	SelectUserByEmail(email string) (*model.User, error)
 }
 
 type repository struct {
@@ -49,7 +50,7 @@ func NewRepository() Repository {
 func (r *repository) InsertUser(user *model.User) error {
 	result := r.db.Create(&user)
 	if result.Error != nil {
-		fmt.Println("Error creating user in database:", result.Error)
+		fmt.Printf("Error creating user in database: %T %s\n", result.Error, result.Error)
 		return errors.New("failed to create user")
 	}
 	return nil
@@ -62,10 +63,24 @@ func (r *repository) SelectUser(id uint) (*model.User, error) {
 	if result.Error != nil {
 		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
 			fmt.Println("User not found")
-			return nil, model.NewNotFoundError(fmt.Sprintf("User %d not found", id))
+			return nil, model.ErrUserNotFound
 		}
 
 		fmt.Println("Error selecting user in database:", result.Error)
+		return nil, errors.New("failed to select user")
+	}
+	return &user, nil
+}
+
+func (r *repository) SelectUserByEmail(email string) (*model.User, error) {
+	var user model.User
+	result := r.db.Where("email = ?", email).First(&user)
+
+	if result.Error != nil {
+		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+			return nil, model.ErrUserNotFound
+		}
+
 		return nil, errors.New("failed to select user")
 	}
 	return &user, nil
