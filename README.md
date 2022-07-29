@@ -1,5 +1,6 @@
 # go-microservice-template
-A full-featured microservice template.
+
+A full-featured, production-ready microservice template.  Includes a Users microservice exposing a REST API providing functionality to perform CRUD operations on resource.
 
 ![example workflow](https://github.com/bruc3mackenzi3/microservice-demo/actions/workflows/go.yml/badge.svg)
 
@@ -34,6 +35,14 @@ Query the application using Curl:
 ```bash
 curl -X POST http://localhost/users/Bruce
 curl http://localhost/users/1
+```
+
+## Developing
+### Mocks
+Update a mock with the following command, e.g. for the `repository.Repository` interface:
+```bash
+cd repository/
+mockery --name Repository --inpackage --outpkg=mock_Repository.go
 ```
 
 ## ToDo

@@ -10,6 +10,7 @@ import (
 type Service interface {
 	CreateUser(user *model.User) error
 	GetUser(id uint) (*model.User, error)
+	DeleteUser(id uint) error
 }
 
 type service struct {
@@ -49,4 +50,9 @@ func (s *service) GetUser(id uint) (*model.User, error) {
 	fmt.Printf("Got user: %+v\n", user)
 
 	return user, nil
+}
+
+func (s *service) DeleteUser(id uint) error {
+	err := s.r.DeleteUser(id)
+	return err
 }

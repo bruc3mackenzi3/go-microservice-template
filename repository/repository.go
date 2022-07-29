@@ -8,12 +8,14 @@ import (
 	"github.com/bruc3mackenzi3/microservice-demo/model"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
+	"gorm.io/gorm/logger"
 )
 
 type Repository interface {
 	InsertUser(user *model.User) error
 	SelectUser(id uint) (*model.User, error)
 	SelectUserByEmail(email string) (*model.User, error)
+	DeleteUser(id uint) error
 }
 
 type repository struct {
@@ -31,7 +33,9 @@ func NewRepository() Repository {
 		config.Env.PostgresPassword,
 	)
 
-	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
+	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{
+		Logger: logger.Default.LogMode(logger.Info),
+	})
 	if err != nil {
 		panic("failed to connect database")
 	}
@@ -50,7 +54,7 @@ func NewRepository() Repository {
 func (r *repository) InsertUser(user *model.User) error {
 	result := r.db.Create(&user)
 	if result.Error != nil {
-		fmt.Printf("Error creating user in database: %T %s\n", result.Error, result.Error)
+		fmt.Printf("Failure running query to create user in database: %T %s\n", result.Error, result.Error)
 		return errors.New("failed to create user")
 	}
 	return nil
@@ -66,7 +70,7 @@ func (r *repository) SelectUser(id uint) (*model.User, error) {
 			return nil, model.ErrUserNotFound
 		}
 
-		fmt.Println("Error selecting user in database:", result.Error)
+		fmt.Println("Failure running query to select user in database:", result.Error)
 		return nil, errors.New("failed to select user")
 	}
 	return &user, nil
@@ -84,4 +88,17 @@ func (r *repository) SelectUserByEmail(email string) (*model.User, error) {
 		return nil, errors.New("failed to select user")
 	}
 	return &user, nil
+}
+
+func (r *repository) DeleteUser(id uint) error {
+	// Delete does not error on no match.
+	// result.RowsAffected is set but can't distinguish between
+	// already deleted and no matching user from that alone
+	result := r.db.Delete(&model.User{}, id)
+	if result.Error != nil {
+		fmt.Println("Failure running query to delete user in database:", result.Error)
+		return errors.New("failed to select user")
+	}
+	fmt.Println("Delete user number of rows affected: ", result.RowsAffected)
+	return nil
 }

@@ -85,18 +85,17 @@ func postUser(c echo.Context) error {
 	}
 
 	response := newUserResponseFromModel(&user)
-	return c.JSON(http.StatusOK, response)
+	return c.JSON(http.StatusCreated, response)
 }
 
 func getUser(c echo.Context) error {
-	id, err := strconv.Atoi(c.Param("id"))
-	if err != nil || id < 0 {
-		c.Logger().Warn("Invalid id argument value='%s' supplied: %v", c.Param("id"), err)
-		r := errorResponse{400, "id must be an unsigned integer"}
-		return c.JSON(r.Status, r)
+	userID, errResponse := parseID(c.Param("id"))
+	if errResponse != nil {
+		c.Logger().Warn("Invalid id argument value='%s'", c.Param("id"))
+		return c.JSON(errResponse.Status, errResponse)
 	}
 
-	user, err := mService.GetUser(uint(id))
+	user, err := mService.GetUser(userID)
 	if err != nil {
 		var r errorResponse
 		if err == model.ErrUserNotFound {
@@ -112,5 +111,30 @@ func getUser(c echo.Context) error {
 }
 
 func deleteUser(c echo.Context) error {
-	return c.String(http.StatusOK, "DELETE user called")
+	userID, errResponse := parseID(c.Param("id"))
+	if errResponse != nil {
+		c.Logger().Warn("Invalid id argument value='%s'", c.Param("id"))
+		return c.JSON(errResponse.Status, errResponse)
+	}
+
+	err := mService.DeleteUser(userID)
+	if err != nil {
+		var r errorResponse
+		if err == model.ErrUserNotFound {
+			r = errorResponse{404, "user not found"}
+		} else if err != nil {
+			r = errorResponse{500, "server error occured"}
+		}
+		return c.JSON(r.Status, r)
+	}
+
+	return c.NoContent(http.StatusOK)
+}
+
+func parseID(idParam string) (uint, *errorResponse) {
+	id, err := strconv.Atoi(idParam)
+	if err != nil || id < 0 {
+		return 0, &errorResponse{400, "id must be an unsigned integer"}
+	}
+	return uint(id), nil
 }
