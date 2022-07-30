@@ -2,8 +2,14 @@ package handler
 
 import "github.com/labstack/echo"
 
+const usersPath = "/users"
+
 func RegisterRoutes(e *echo.Echo) {
-	e.POST("/users/", postUser)
-	e.GET("/users/:id", getUser)
-	e.DELETE("/users/:id", deleteUser)
+	g := e.Group(usersPath)
+	// TODO: add middleware to the group
+
+	g.POST("/", postUser)
+	g.GET("/:id", getUser)
+	g.PUT("/:id", putUser)
+	g.DELETE("/:id", deleteUser)
 }

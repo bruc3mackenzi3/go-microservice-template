@@ -10,6 +10,7 @@ import (
 type Service interface {
 	CreateUser(user *model.User) error
 	GetUser(id uint) (*model.User, error)
+	UpdateUser(user *model.User) error
 	DeleteUser(id uint) error
 }
 
@@ -50,6 +51,24 @@ func (s *service) GetUser(id uint) (*model.User, error) {
 	fmt.Printf("Got user: %+v\n", user)
 
 	return user, nil
+}
+
+func (s *service) UpdateUser(user *model.User) error {
+	// Check if email is in use by an existing user
+	_, err := s.r.SelectUserByEmail(user.Email)
+	if err == nil {
+		return model.ErrUserEmailTaken
+	} else if err != model.ErrUserNotFound {
+		return err
+	}
+
+	err = s.r.UpdateUser(user)
+	if err != nil {
+		return err
+	}
+
+	fmt.Printf("Created new user: %+v\n", user)
+	return nil
 }
 
 func (s *service) DeleteUser(id uint) error {

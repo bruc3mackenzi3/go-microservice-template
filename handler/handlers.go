@@ -110,6 +110,54 @@ func getUser(c echo.Context) error {
 	return c.JSON(http.StatusOK, response)
 }
 
+func putUser(c echo.Context) error {
+	userID, errResponse := parseID(c.Param("id"))
+	if errResponse != nil {
+		c.Logger().Warn("Invalid id argument value='%s'", c.Param("id"))
+		return c.JSON(errResponse.Status, errResponse)
+	}
+
+	var rUser userRequestBody
+
+	// Parse request body to struct; will catch malformed JSON errors
+	err := c.Bind(&rUser)
+	if err != nil {
+		c.Logger().Warn("Failed to decode request body: ", err)
+		r := errorResponse{400, "bad request"}
+		return c.JSON(r.Status, r)
+	}
+
+	// Validate struct based on validate tags in struct definition
+	err = validate.Struct(rUser)
+	if err != nil {
+		c.Logger().Warn("Failed to validate request struct: ", err)
+		r := errorResponse{400, "bad request"}
+		return c.JSON(r.Status, r)
+	}
+
+	user := model.User{
+		Name:  rUser.Name,
+		Email: strings.ToLower(rUser.Email),
+		Phone: rUser.Phone,
+	}
+	user.ID = userID
+
+	err = mService.UpdateUser(&user)
+	if err == model.ErrUserEmailTaken {
+		c.Logger().Warnf("Cannot create user, email %s already taken", user.Email)
+		r := errorResponse{400, "email already taken"}
+		return c.JSON(r.Status, r)
+	}
+	if err != nil {
+		c.Logger().Error("Failed to create user: ", err)
+		r := errorResponse{500, "server error occured"}
+		return c.JSON(r.Status, r)
+	}
+
+	response := newUserResponseFromModel(&user)
+	return c.JSON(http.StatusCreated, response)
+}
+
 func deleteUser(c echo.Context) error {
 	userID, errResponse := parseID(c.Param("id"))
 	if errResponse != nil {

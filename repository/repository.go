@@ -15,6 +15,7 @@ type Repository interface {
 	InsertUser(user *model.User) error
 	SelectUser(id uint) (*model.User, error)
 	SelectUserByEmail(email string) (*model.User, error)
+	UpdateUser(user *model.User) error
 	DeleteUser(id uint) error
 }
 
@@ -88,6 +89,15 @@ func (r *repository) SelectUserByEmail(email string) (*model.User, error) {
 		return nil, errors.New("failed to select user")
 	}
 	return &user, nil
+}
+
+func (r *repository) UpdateUser(user *model.User) error {
+	result := r.db.Save(&user)
+	if result.Error != nil {
+		fmt.Printf("Failure running query to create user in database: %T %s\n", result.Error, result.Error)
+		return errors.New("failed to create user")
+	}
+	return nil
 }
 
 func (r *repository) DeleteUser(id uint) error {

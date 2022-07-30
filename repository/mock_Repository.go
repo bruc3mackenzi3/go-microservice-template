@@ -86,6 +86,20 @@ func (_m *MockRepository) SelectUserByEmail(email string) (*model.User, error) {
 	return r0, r1
 }
 
+// UpdateUser provides a mock function with given fields: user
+func (_m *MockRepository) UpdateUser(user *model.User) error {
+	ret := _m.Called(user)
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(*model.User) error); ok {
+		r0 = rf(user)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
+}
+
 type mockConstructorTestingTNewMockRepository interface {
 	mock.TestingT
 	Cleanup(func())
