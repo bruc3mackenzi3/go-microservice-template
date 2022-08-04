@@ -1,14 +1,11 @@
-FROM golang:1.17-alpine
+FROM golang:1.18-alpine
 
-# Example abstracted from https://docs.docker.com/language/golang/build-images/
-
+EXPOSE 80
 WORKDIR /app
 
 COPY ./ ./
 
 RUN go mod download
 RUN go build -o microservice-app
-
-EXPOSE 80
 
 CMD [ "./microservice-app" ]

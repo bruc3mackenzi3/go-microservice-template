@@ -13,15 +13,15 @@ help: ## Print this help message
 		} \
 	' $(MAKEFILE_LIST) | column -s$$'\t' -t
 
-.PHONY: build
-build:  ## Compile Go program
-	go build -v
-
 .PHONY: init
 init:
 	go mod tidy
 	go mod vendor
 	go install github.com/vektra/mockery/v2@latest
+
+.PHONY: build
+build:  ## Compile Go program
+	go build -v
 
 .PHONY: build-multistage
 build-multistage:  ## Minimal Docker build resulting in a much smaller container
@@ -31,6 +31,9 @@ build-multistage:  ## Minimal Docker build resulting in a much smaller container
 start-platform:  ## Build & start platform container(s)
 	docker-compose build
 	docker-compose --profile platform up --detach
+	# These commands seed the database; currently disabled in favour of GORM AutoMigrate
+	# docker cp ./sql/seed.sql $(POSTGRES_CONTAINER):/docker-entrypoint-initdb.d/seed.sql
+	# docker exec -u postgres $(POSTGRES_CONTAINER) psql $(PGDB) $(PGUSER) -f docker-entrypoint-initdb.d/seed.sql
 
 .PHONY: run
 run:  ## Run application natively
@@ -39,33 +42,18 @@ run:  ## Run application natively
 
 .PHONY: start
 start:  ## Start application container(s)
+	docker-compose stop debug-app
 	docker-compose --profile application up --detach
-	# These commands seed the database; currently disabled in favour of GORM AutoMigrate
-	# docker cp ./sql/seed.sql $(POSTGRES_CONTAINER):/docker-entrypoint-initdb.d/seed.sql
-	# docker exec -u postgres $(POSTGRES_CONTAINER) psql $(PGDB) $(PGUSER) -f docker-entrypoint-initdb.d/seed.sql
+
+.PHONY: stop
+stop:  ## Stop all containers
+	docker-compose  stop
 
 .PHONY: start-debug
 start-debug:  ## Restart app in debug mode with Delve debugger
-	docker-compose --profile application stop
-	docker rm --force microserver-debug
-	docker build -f Dockerfile.debug --tag debug .
-	docker run --name microserver-debug \
-		--network microservice_network \
-		--env PGHOST=postgres-db \
-		--env PGDB=microservice \
-		--env PGUSER=microservice \
-		--env PGPASSWORD=example123 \
-		--publish 8080:80 \
-		--publish 4000:4000 \
-		debug
-
-.PHONY: stop
-stop:  ## Stop application container(s)
-	docker-compose --profile application stop
-
-.PHONY: stop-platform
-stop-platform:  ## Stop platform container(s)
-	docker-compose --profile platform stop
+	docker-compose stop app  # Note: must specify service directly since profiles doesn't work with stop
+	docker-compose --profile debug build
+	docker-compose --profile debug up --detach
 
 .PHONY: test
 test:  ## Run test suite

@@ -19,12 +19,30 @@ services:
     # - postgres-db
     build:
       context: .
-    container_name: microserver
-    image: microservice-demo
+    container_name: users
+    image: users-image
     profiles:
     - application
     ports:
     - 8080:80
+    networks:
+      microservice_network:
+    environment:
+      PGHOST: postgres-db
+      PGDB: microservice
+      PGUSER: microservice
+      PGPASSWORD: example123
+
+  debug-app:
+    build:
+      context: .
+    container_name: debug-users
+    image: debug-users-image
+    profiles:
+    - debug
+    ports:
+    - 8080:80
+    - 4000:4000
     networks:
       microservice_network:
     environment:
