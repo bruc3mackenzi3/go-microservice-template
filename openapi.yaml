@@ -1,0 +1,162 @@
+openapi: 3.0.0
+info:
+  version: 1.0.0
+  title: Users API
+  description: A demo API illustrating a standalone, RESTful microservice
+
+paths:
+  /users/:
+    post:
+      description: Create a new user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserRequest'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserResponse'
+        '400':
+          description: Client error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+
+  /users/{id}:
+    get:
+      description: Get user matching id
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID of user to retrieve
+          schema:
+            type: integer
+            example: 1
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserResponse'
+        '400':
+          description: Invalid parameters
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    put:
+      description: Update user matching id
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID of user to retrieve
+          schema:
+            type: integer
+            example: 1
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserRequest'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserResponse'
+        '400':
+          description: Invalid parameters
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    delete:
+      description: Delete user matching id
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID of user to retrieve
+          schema:
+            type: integer
+            example: 1
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Invalid parameters
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+components:
+  schemas:
+    UserRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          example: Bruce
+        email:
+          type: string
+          example: bruce@gmail.com
+        phone:
+          type: string
+          example: +14167896789
+    UserResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        name:
+          type: string
+          example: Bruce
+        email:
+          type: string
+          example: bruce@gmail.com
+        phone:
+          type: string
+          example: +14167896789
+    ErrorResponse:
+      type: object
+      properties:
+        status:
+          type: integer
+          example: 400
+        message:
+          type: string
+          example: email already taken
