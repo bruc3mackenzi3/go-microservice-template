@@ -63,7 +63,6 @@ test:  ## Run test suite
 clean:  ## Clean project
 	go clean ./...
 	docker-compose rm --force
-	docker rm --force microserver-debug
 
 .PHONY: nuke
 nuke:  ## Remove all data generated with the project
