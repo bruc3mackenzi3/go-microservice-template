@@ -2,7 +2,7 @@ package handler
 
 import "github.com/labstack/echo"
 
-const usersPath = "/users"
+const usersPath = "/v1/users"
 
 func RegisterRoutes(e *echo.Echo) {
 	g := e.Group(usersPath)

@@ -20,7 +20,7 @@ func init() {
 	mService = service.NewService(repository.NewRepository())
 }
 
-type userRequestBody struct {
+type UserRequest struct {
 	Name  string `json:"name" validate:"required"`
 	Email string `json:"email" validate:"required"`
 	Phone string `json:"phone"`
@@ -48,7 +48,7 @@ func newUserResponseFromModel(u *model.User) userResponse {
 }
 
 func postUser(c echo.Context) error {
-	var rUser userRequestBody
+	var rUser UserRequest
 
 	// Parse request body to struct; will catch malformed JSON errors
 	err := c.Bind(&rUser)
@@ -66,11 +66,7 @@ func postUser(c echo.Context) error {
 		return c.JSON(r.Status, r)
 	}
 
-	user := model.User{
-		Name:  rUser.Name,
-		Email: strings.ToLower(rUser.Email),
-		Phone: rUser.Phone,
-	}
+	user := newUserFromRequest(rUser, 0)
 
 	err = mService.CreateUser(&user)
 	if err == model.ErrUserEmailTaken {
@@ -117,7 +113,7 @@ func putUser(c echo.Context) error {
 		return c.JSON(errResponse.Status, errResponse)
 	}
 
-	var rUser userRequestBody
+	var rUser UserRequest
 
 	// Parse request body to struct; will catch malformed JSON errors
 	err := c.Bind(&rUser)
@@ -135,27 +131,25 @@ func putUser(c echo.Context) error {
 		return c.JSON(r.Status, r)
 	}
 
-	user := model.User{
-		Name:  rUser.Name,
-		Email: strings.ToLower(rUser.Email),
-		Phone: rUser.Phone,
-	}
-	user.ID = userID
+	user := newUserFromRequest(rUser, userID)
 
 	err = mService.UpdateUser(&user)
-	if err == model.ErrUserEmailTaken {
-		c.Logger().Warnf("Cannot create user, email %s already taken", user.Email)
+	if err == model.ErrUserNotFound {
+		r := errorResponse{404, "user not found"}
+		return c.JSON(r.Status, r)
+	} else if err == model.ErrUserEmailTaken {
+		c.Logger().Warnf("Cannot update user, email %s already taken", user.Email)
 		r := errorResponse{400, "email already taken"}
 		return c.JSON(r.Status, r)
 	}
 	if err != nil {
-		c.Logger().Error("Failed to create user: ", err)
+		c.Logger().Error("Failed to update user: ", err)
 		r := errorResponse{500, "server error occured"}
 		return c.JSON(r.Status, r)
 	}
 
 	response := newUserResponseFromModel(&user)
-	return c.JSON(http.StatusCreated, response)
+	return c.JSON(http.StatusOK, response)
 }
 
 func deleteUser(c echo.Context) error {
@@ -185,4 +179,14 @@ func parseID(idParam string) (uint, *errorResponse) {
 		return 0, &errorResponse{400, "id must be an unsigned integer"}
 	}
 	return uint(id), nil
+}
+
+func newUserFromRequest(rUser UserRequest, userID uint) model.User {
+	u := model.User{
+		Name:  rUser.Name,
+		Email: strings.ToLower(rUser.Email),
+		Phone: rUser.Phone,
+	}
+	u.ID = userID
+	return u
 }

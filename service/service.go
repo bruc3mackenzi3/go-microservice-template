@@ -54,11 +54,11 @@ func (s *service) GetUser(id uint) (*model.User, error) {
 }
 
 func (s *service) UpdateUser(user *model.User) error {
-	// Check if email is in use by an existing user
-	_, err := s.r.SelectUserByEmail(user.Email)
-	if err == nil {
+	// Check if email is in use by another user
+	existingUser, err := s.r.SelectUserByEmail(user.Email)
+	if existingUser != nil && user.ID != existingUser.ID && err == nil {
 		return model.ErrUserEmailTaken
-	} else if err != model.ErrUserNotFound {
+	} else if err != nil && err != model.ErrUserNotFound {
 		return err
 	}
 
@@ -67,11 +67,16 @@ func (s *service) UpdateUser(user *model.User) error {
 		return err
 	}
 
-	fmt.Printf("Created new user: %+v\n", user)
+	fmt.Printf("Updated user: %+v\n", user)
 	return nil
 }
 
 func (s *service) DeleteUser(id uint) error {
 	err := s.r.DeleteUser(id)
-	return err
+	if err != nil {
+		return err
+	}
+
+	fmt.Printf("Deleted user: %d\n", id)
+	return nil
 }

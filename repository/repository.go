@@ -79,7 +79,7 @@ func (r *repository) SelectUser(id uint) (*model.User, error) {
 
 func (r *repository) SelectUserByEmail(email string) (*model.User, error) {
 	var user model.User
-	result := r.db.Where("email = ?", email).First(&user)
+	result := r.db.Unscoped().Where("email = ?", email).First(&user)
 
 	if result.Error != nil {
 		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
@@ -92,23 +92,25 @@ func (r *repository) SelectUserByEmail(email string) (*model.User, error) {
 }
 
 func (r *repository) UpdateUser(user *model.User) error {
-	result := r.db.Save(&user)
+	result := r.db.Model(&user).Updates(&user)
 	if result.Error != nil {
 		fmt.Printf("Failure running query to create user in database: %T %s\n", result.Error, result.Error)
 		return errors.New("failed to create user")
+	}
+	if result.RowsAffected == 0 {
+		return model.ErrUserNotFound
 	}
 	return nil
 }
 
 func (r *repository) DeleteUser(id uint) error {
-	// Delete does not error on no match.
-	// result.RowsAffected is set but can't distinguish between
-	// already deleted and no matching user from that alone
 	result := r.db.Delete(&model.User{}, id)
 	if result.Error != nil {
 		fmt.Println("Failure running query to delete user in database:", result.Error)
 		return errors.New("failed to select user")
 	}
-	fmt.Println("Delete user number of rows affected: ", result.RowsAffected)
+	if result.RowsAffected == 0 {
+		return model.ErrUserNotFound
+	}
 	return nil
 }
