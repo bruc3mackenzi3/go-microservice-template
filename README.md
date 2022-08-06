@@ -20,6 +20,9 @@ A full-featured, production-ready microservice template.  Includes a Users micro
     * Debugging native application
     * Debugging in Docker container using [Delve debugger](https://github.com/go-delve/delve)
 * GitHub Actions to run build & tests
+* Docs
+  * README
+  * OpenAPI definition documenting REST API
 
 ## Getting Started
 * Fetch Go dependencies with `make init`
