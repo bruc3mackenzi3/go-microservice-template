@@ -6,7 +6,7 @@ import (
 
 	"github.com/bruc3mackenzi3/microservice-demo/config"
 	"github.com/bruc3mackenzi3/microservice-demo/handler"
-	"github.com/labstack/echo"
+	"github.com/labstack/echo/v4"
 	"github.com/labstack/gommon/log"
 )
 

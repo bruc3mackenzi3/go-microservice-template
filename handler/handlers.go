@@ -9,7 +9,7 @@ import (
 	"github.com/bruc3mackenzi3/microservice-demo/repository"
 	"github.com/bruc3mackenzi3/microservice-demo/service"
 	"github.com/go-playground/validator/v10"
-	"github.com/labstack/echo"
+	"github.com/labstack/echo/v4"
 )
 
 var validate *validator.Validate
