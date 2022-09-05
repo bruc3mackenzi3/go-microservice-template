@@ -1,6 +1,8 @@
 # go-microservice-template
 
-A full-featured, production-ready microservice template.  Includes a Users microservice exposing a REST API providing functionality to perform CRUD operations on resource.
+A full-featured, production-ready microservice template for building applications in Go.  Includes a Users microservice exposing a REST API providing functionality to perform CRUD operations on the resource.
+
+[Fork this project](https://github.com/bruc3mackenzi3/go-microservice-template/fork) to start building your own REST-based microservice application.
 
 ![example workflow](https://github.com/bruc3mackenzi3/microservice-demo/actions/workflows/go.yml/badge.svg)
 
