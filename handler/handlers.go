@@ -54,7 +54,7 @@ func postUser(c echo.Context) error {
 	err := c.Bind(&rUser)
 	if err != nil {
 		c.Logger().Warn("Failed to decode request body: ", err)
-		r := errorResponse{400, "bad request"}
+		r := errorResponse{http.StatusBadRequest, "bad request"}
 		return c.JSON(r.Status, r)
 	}
 
@@ -62,7 +62,7 @@ func postUser(c echo.Context) error {
 	err = validate.Struct(rUser)
 	if err != nil {
 		c.Logger().Warn("Failed to validate request struct: ", err)
-		r := errorResponse{400, "bad request"}
+		r := errorResponse{http.StatusBadRequest, "bad request"}
 		return c.JSON(r.Status, r)
 	}
 
@@ -71,12 +71,12 @@ func postUser(c echo.Context) error {
 	err = mService.CreateUser(&user)
 	if err == model.ErrUserEmailTaken {
 		c.Logger().Warnf("Cannot create user, email %s already taken", user.Email)
-		r := errorResponse{400, "email already taken"}
+		r := errorResponse{http.StatusBadRequest, "email already taken"}
 		return c.JSON(r.Status, r)
 	}
 	if err != nil {
 		c.Logger().Error("Failed to create user: ", err)
-		r := errorResponse{500, "server error occured"}
+		r := errorResponse{http.StatusInternalServerError, "server error occured"}
 		return c.JSON(r.Status, r)
 	}
 
@@ -85,19 +85,20 @@ func postUser(c echo.Context) error {
 }
 
 func getUser(c echo.Context) error {
-	userID, errResponse := parseID(c.Param("id"))
-	if errResponse != nil {
-		c.Logger().Warn("Invalid id argument value='%s'", c.Param("id"))
-		return c.JSON(errResponse.Status, errResponse)
+	var userID uint
+	err := echo.PathParamsBinder(c).Uint("id", &userID).BindError()
+	if err != nil {
+		c.Logger().Warn("Invalid id param:", err)
+		return c.JSON(http.StatusBadRequest, errorResponse{http.StatusBadRequest, "bad user ID"})
 	}
 
 	user, err := mService.GetUser(userID)
 	if err != nil {
 		var r errorResponse
 		if err == model.ErrUserNotFound {
-			r = errorResponse{404, "user not found"}
+			r = errorResponse{http.StatusNotFound, "user not found"}
 		} else if err != nil {
-			r = errorResponse{500, "server error occured"}
+			r = errorResponse{http.StatusInternalServerError, "server error occured"}
 		}
 		return c.JSON(r.Status, r)
 	}
@@ -107,19 +108,20 @@ func getUser(c echo.Context) error {
 }
 
 func putUser(c echo.Context) error {
-	userID, errResponse := parseID(c.Param("id"))
-	if errResponse != nil {
-		c.Logger().Warn("Invalid id argument value='%s'", c.Param("id"))
-		return c.JSON(errResponse.Status, errResponse)
+	var userID uint
+	err := echo.PathParamsBinder(c).Uint("id", &userID).BindError()
+	if err != nil {
+		c.Logger().Warn("Invalid id param:", err)
+		return c.JSON(http.StatusBadRequest, errorResponse{http.StatusBadRequest, "bad user ID"})
 	}
 
 	var rUser UserRequest
 
 	// Parse request body to struct; will catch malformed JSON errors
-	err := c.Bind(&rUser)
+	err = c.Bind(&rUser)
 	if err != nil {
 		c.Logger().Warn("Failed to decode request body: ", err)
-		r := errorResponse{400, "bad request"}
+		r := errorResponse{http.StatusBadRequest, "bad request"}
 		return c.JSON(r.Status, r)
 	}
 
@@ -127,7 +129,7 @@ func putUser(c echo.Context) error {
 	err = validate.Struct(rUser)
 	if err != nil {
 		c.Logger().Warn("Failed to validate request struct: ", err)
-		r := errorResponse{400, "bad request"}
+		r := errorResponse{http.StatusBadRequest, "bad request"}
 		return c.JSON(r.Status, r)
 	}
 
@@ -135,16 +137,16 @@ func putUser(c echo.Context) error {
 
 	err = mService.UpdateUser(&user)
 	if err == model.ErrUserNotFound {
-		r := errorResponse{404, "user not found"}
+		r := errorResponse{http.StatusNotFound, "user not found"}
 		return c.JSON(r.Status, r)
 	} else if err == model.ErrUserEmailTaken {
 		c.Logger().Warnf("Cannot update user, email %s already taken", user.Email)
-		r := errorResponse{400, "email already taken"}
+		r := errorResponse{http.StatusBadRequest, "email already taken"}
 		return c.JSON(r.Status, r)
 	}
 	if err != nil {
 		c.Logger().Error("Failed to update user: ", err)
-		r := errorResponse{500, "server error occured"}
+		r := errorResponse{http.StatusInternalServerError, "server error occured"}
 		return c.JSON(r.Status, r)
 	}
 
@@ -153,19 +155,20 @@ func putUser(c echo.Context) error {
 }
 
 func deleteUser(c echo.Context) error {
-	userID, errResponse := parseID(c.Param("id"))
-	if errResponse != nil {
-		c.Logger().Warn("Invalid id argument value='%s'", c.Param("id"))
-		return c.JSON(errResponse.Status, errResponse)
+	var userID uint
+	err := echo.PathParamsBinder(c).Uint("id", &userID).BindError()
+	if err != nil {
+		c.Logger().Warn("Invalid id param:", err)
+		return c.JSON(http.StatusBadRequest, errorResponse{http.StatusBadRequest, "bad user ID"})
 	}
 
-	err := mService.DeleteUser(userID)
+	err = mService.DeleteUser(userID)
 	if err != nil {
 		var r errorResponse
 		if err == model.ErrUserNotFound {
-			r = errorResponse{404, "user not found"}
+			r = errorResponse{http.StatusNotFound, "user not found"}
 		} else if err != nil {
-			r = errorResponse{500, "server error occured"}
+			r = errorResponse{http.StatusInternalServerError, "server error occured"}
 		}
 		return c.JSON(r.Status, r)
 	}
@@ -174,9 +177,9 @@ func deleteUser(c echo.Context) error {
 }
 
 func parseID(idParam string) (uint, *errorResponse) {
-	id, err := strconv.Atoi(idParam)
+	id, err := strconv.ParseUint(idParam, 10, 64)
 	if err != nil || id < 0 {
-		return 0, &errorResponse{400, "id must be an unsigned integer"}
+		return 0, &errorResponse{http.StatusBadRequest, "id must be an unsigned integer"}
 	}
 	return uint(id), nil
 }
