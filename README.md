@@ -51,6 +51,8 @@ mockery --name Repository --inpackage --outpkg=mock_Repository.go
 ```
 
 ## ToDo
+* BUG - Fix make build not triggering build when image already exists
+  * This is because - unlike `docker build` - `docker-compose build` uses cache by default
 * Logging
 * Context
 * Integration tests

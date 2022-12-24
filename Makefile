@@ -42,12 +42,13 @@ run:  ## Run application natively
 
 .PHONY: start
 start:  ## Start application container(s)
+	# WARNING: make build does not correctly rebuild users container when the image already exists
 	docker-compose stop debug-app
 	docker-compose --profile application up --detach
 
 .PHONY: stop
 stop:  ## Stop all containers
-	docker-compose  stop
+	docker-compose --profile application --profile platform stop
 
 .PHONY: start-debug
 start-debug:  ## Restart app in debug mode with Delve debugger

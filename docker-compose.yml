@@ -20,7 +20,7 @@ services:
     build:
       context: .
     container_name: users
-    image: users-image
+    image: users
     profiles:
     - application
     ports:
@@ -37,7 +37,7 @@ services:
     build:
       context: .
     container_name: debug-users
-    image: debug-users-image
+    image: debug-users
     profiles:
     - debug
     ports:

@@ -1,6 +1,5 @@
 FROM golang:1.18-alpine
 
-EXPOSE 80
 WORKDIR /app
 
 COPY ./ ./
