@@ -7,6 +7,7 @@ import (
 	"github.com/bruc3mackenzi3/microservice-demo/config"
 	"github.com/bruc3mackenzi3/microservice-demo/handler"
 	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v4/middleware"
 	"github.com/labstack/gommon/log"
 )
 
@@ -17,6 +18,21 @@ func setupServer() {
 	})
 
 	handler.RegisterRoutes(e)
+
+	// Enabling the middleware logger makes Echo log each http request received
+	// e.Use(middleware.Logger())
+	e.Use(middleware.RequestLoggerWithConfig(middleware.RequestLoggerConfig{
+		LogStatus: true,
+		LogURI:    true,
+		BeforeNextFunc: func(c echo.Context) {
+			c.Set("customValueFromContext", 42)
+		},
+		LogValuesFunc: func(c echo.Context, v middleware.RequestLoggerValues) error {
+			value, _ := c.Get("customValueFromContext").(int)
+			fmt.Printf("REQUEST: uri: %v, status: %v, custom-value: %v\n", v.URI, v.Status, value)
+			return nil
+		},
+	}))
 
 	e.Logger.SetLevel(log.DEBUG)
 
