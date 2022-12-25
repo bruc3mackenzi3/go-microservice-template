@@ -27,19 +27,64 @@ A full-featured, production-ready microservice template for building application
   * OpenAPI definition documenting REST API
 
 ## Getting Started
-* Fetch Go dependencies with `make init`
-* Compile the Go application with `make build`
-* Build & start the platform container(s) with `make start-platform`
-* Run the microservice app directly with `make run`
-* Run the microservice app in Docker with `make start`, stop with `make stop`
-* Execute unit tests with `make test`
-* Stop the platform with `make stop-platform`
-* Get help with all make commands with `make help`
+Fetch Go dependencies
+```
+make init
+```
+
+Compile the Go application
+```
+make build
+```
+
+Start the database
+```
+make start-db
+```
+
+Run the microservice app directly
+```
+make run
+```
+
+Execute unit tests
+```
+make test
+```
+
+Stop the database
+```
+make stop-db
+```
+
+Get help with all make commands
+```
+make help
+```
 
 Query the application using Curl:
 ```bash
 curl -X POST http://localhost/users/Bruce
 curl http://localhost/users/1
+```
+
+### Running with Docker
+Run the microservice app in Docker
+```sh
+make d-build
+make d-start
+```
+
+stop the app
+```sh
+make stop
+```
+
+Rebuild
+```bash
+docker rm users
+make d-build
+make d-start
 ```
 
 ## Developing
@@ -51,8 +96,8 @@ mockery --name Repository --inpackage --outpkg=mock_Repository.go
 ```
 
 ## ToDo
-* BUG - Fix make build not triggering build when image already exists
-  * This is because - unlike `docker build` - `docker-compose build` uses cache by default
+* BUG: Docker app cannot connect to DB - likely needs a Docker network configured
+* Graceful shutdown (should entail catching SIGTERM, disconnecting from DB & exiting)
 * Logging
 * Context
 * Integration tests

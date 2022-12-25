@@ -2,7 +2,8 @@ package config
 
 import "os"
 
-const Port = 80
+const Port = 8080
+const Test = 1234
 
 var Env Environment
 
@@ -15,9 +16,9 @@ type Environment struct {
 
 func init() {
 	Env = Environment{
-		PostgresHost:     os.Getenv("PGHOST"),
-		PostgresDB:       os.Getenv("PGDB"),
-		PostgresUser:     os.Getenv("PGUSER"),
-		PostgresPassword: os.Getenv("PGPASSWORD"),
+		PostgresHost:     os.Getenv("POSTGRES_HOST"),
+		PostgresDB:       os.Getenv("POSTGRES_DB"),
+		PostgresUser:     os.Getenv("POSTGRES_USER"),
+		PostgresPassword: os.Getenv("POSTGRES_PASSWORD"),
 	}
 }
