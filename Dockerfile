@@ -1,4 +1,4 @@
-FROM golang:1.18-alpine
+FROM gcr.io/distroless/base-debian10
 
 WORKDIR /app
 
