@@ -2,9 +2,6 @@ FROM golang:1.18-alpine
 
 WORKDIR /app
 
-COPY ./ ./
+COPY ./users-docker ./
 
-RUN go mod download
-RUN go build -o microservice-app
-
-CMD [ "./microservice-app" ]
+CMD [ "./users-docker" ]

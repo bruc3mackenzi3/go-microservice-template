@@ -16,9 +16,8 @@ A full-featured, production-ready microservice template for building application
   * golangci-lint with `.golangci.yml` config and VSCode `settings.json` integration
 * PostgreSQL 14 database
 * Docker for containerizing the application
-* Docker Compose for container orchestration
 * VSCode Integration
-  * launch.json configurations for:
+  * `launch.json` configurations for:
     * Debugging native application
     * Debugging in Docker container using [Delve debugger](https://github.com/go-delve/delve)
 * GitHub Actions to run build & tests

@@ -46,6 +46,7 @@ stop-db:
 
 .PHONY: d-build
 d-build:  ## Build app in Docker image
+	env GOOS=linux GOARCH=amd64 go build -o users-docker
 	docker build -t $(USERS_IMAGE):latest .
 
 .PHONY: d-run
