@@ -1,0 +1,30 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: users
+spec:
+  containers:
+  - name: postgres
+    image: postgres:14
+    ports:
+    - containerPort: 5432
+    env:
+    - name: POSTGRES_DB
+      value: microservice
+    - name: POSTGRES_USER
+      value: microservice
+    - name: POSTGRES_PASSWORD
+      value: example123
+  - name: users
+    image: bruc3mackenzi3/users:1.0
+    ports:
+    - containerPort: 8080
+    env:
+    - name: POSTGRES_HOST
+      value: localhost
+    - name: POSTGRES_DB
+      value: microservice
+    - name: POSTGRES_USER
+      value: microservice
+    - name: POSTGRES_PASSWORD
+      value: example123

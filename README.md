@@ -16,6 +16,7 @@ A full-featured, production-ready microservice template for building application
   * golangci-lint with `.golangci.yml` config and VSCode `settings.json` integration
 * PostgreSQL 14 database
 * Docker for containerizing the application
+* Kubernetes for deploying the containerized application
 * VSCode Integration
   * `launch.json` configurations for:
     * Debugging native application
@@ -84,6 +85,19 @@ Rebuild
 docker rm users
 make d-build
 make d-start
+```
+
+### Running in Kubernetes
+Precondition: kubectl is installed in your local environment, and connected to a Kubernetes cluster.
+
+Deploy application as a Pod
+```sh
+make k-run
+```
+
+Tear down application
+```sh
+make k-stop
 ```
 
 ## Developing
