@@ -90,14 +90,39 @@ make d-start
 ### Running in Kubernetes
 Precondition: kubectl is installed in your local environment, and connected to a Kubernetes cluster.
 
-Deploy application as a Pod
+First deploy the database:
 ```sh
-make k-run
+kubectl apply -f k8s-postgres.yaml
 ```
 
-Tear down application
+Next deploy the Users service:
 ```sh
-make k-stop
+kubectl apply -f k8s-users.yaml
+```
+
+Tail application logs:
+```
+kubectl logs -f users
+```
+
+The service is exposed externally with a Kubernetes object called a NodePort Service.  This NodePort is exposed externally on port `30080`.  If you're using a local K8s cluster like MiniKube or Docker Desktop, it will be accessible via `localhost`, or `127.0.0.1`:
+```
+curl http://localhost:30080/v1/users/1
+```
+
+The Postgres database is exposed internally only, because in a real world scenario it should not be accessible from outside the Kubernetes cluster.  Assuming your cluster is running locally, you can connect to it by telling Kubernetes to expose the connection:
+```
+kubectl port-forward postgres 5432
+```
+Then connect to it as you normally would, e.g.:
+```
+psql -U microservice
+```
+
+Delete application resources created on the cluster:
+```sh
+kubectl delete service postgres users
+kubectl delete pod postgres users
 ```
 
 ## Developing

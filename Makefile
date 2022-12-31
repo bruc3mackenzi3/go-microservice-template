@@ -64,14 +64,6 @@ start-debug:  ## Restart app in debug mode with Delve debugger
 	docker build -t users-debug -f Dockerfile.debug
 	docker start users-debug
 
-.PHONY: k-run
-k-run:  ## Run application in Kubernetes; kubectl must be connected to a Kubernetes cluster
-	kubectl apply -f k8s-users.yaml
-
-.PHONY: k-stop
-k-stop:  ## Stop and delete Kuberenetes application
-	kubectl delete -f k8s-users.yaml
-
 .PHONY: test
 test:  ## Run test suite
 	go test -v ./...

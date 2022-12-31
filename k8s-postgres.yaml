@@ -1,0 +1,33 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: postgres
+  labels:
+    app: postgres
+spec:
+  containers:
+  - name: postgres
+    image: postgres:14
+    ports:
+    - containerPort: 5432
+      name: postgres-conn
+    env:
+    - name: POSTGRES_DB
+      value: microservice
+    - name: POSTGRES_USER
+      value: microservice
+    - name: POSTGRES_PASSWORD
+      value: example123
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres
+spec:
+  type: ClusterIP
+  selector:
+    app: postgres
+  ports:
+    - protocol: TCP
+      port: 5432
+      targetPort: postgres-conn
