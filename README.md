@@ -125,6 +125,9 @@ kubectl delete service postgres users
 kubectl delete pod postgres users
 ```
 
+Here is a diagram of the setup in Kuberenetes:
+![alt text](./k8s.png)
+
 ## Developing
 ### Mocks
 Update a mock with the following command, e.g. for the `repository.Repository` interface:
