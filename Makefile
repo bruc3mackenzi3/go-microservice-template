@@ -1,4 +1,5 @@
-SHELL := /bin/bash
+GO := go
+
 PG_HOST = localhost
 PG_DB = microservice
 PG_USER = microservice
@@ -21,15 +22,15 @@ help: ## Print this help message
 
 .PHONY: init
 init:  ## Fetch Go dependencies; Download Postgres Docker Image
-	go mod tidy
-	go mod vendor
-	go install github.com/vektra/mockery/v2@latest
+	$(GO) mod tidy
+	$(GO) mod vendor
+	$(GO) install github.com/vektra/mockery/v2@latest
 	docker pull $(PG_IMAGE)
 	docker create --name $(PG_CONTAINER) --publish 5432:5432 -e POSTGRES_DB=$(PG_DB) -e POSTGRES_USER=$(PG_USER) -e POSTGRES_PASSWORD=$(PG_PASSWORD) $(PG_IMAGE)
 
 .PHONY: build
 build:  ## Compile Go program
-	go build -v
+	$(GO) build -v
 
 .PHONY: start-db
 start-db:  ## Start the Postgres Database
@@ -38,7 +39,7 @@ start-db:  ## Start the Postgres Database
 .PHONY: run
 run:  ## Run the Users application (exit with CTRL+C)
 	POSTGRES_DB=$(PG_DB) POSTGRES_USER=$(PG_USER) POSTGRES_PASSWORD=$(PG_PASSWORD) POSTGRES_HOST=$(PG_HOST) \
-	go run main.go
+	$(GO) run main.go
 
 .PHONY: stop-db
 stop-db:
@@ -46,7 +47,7 @@ stop-db:
 
 .PHONY: d-build
 d-build:  ## Build app in Docker image
-	env GOOS=linux GOARCH=amd64 go build -o users-docker
+	env GOOS=linux GOARCH=amd64 $(GO) build -o users-docker
 	docker build -t $(USERS_IMAGE):latest .
 
 .PHONY: d-run
@@ -66,11 +67,11 @@ start-debug:  ## Restart app in debug mode with Delve debugger
 
 .PHONY: test
 test:  ## Run test suite
-	go test -v ./...
+	$(GO) test -v ./...
 
 .PHONY: clean
 clean:  ## Clean project
-	go clean ./...
+	$(GO) clean ./...
 	docker rm --force postgres-db users
 
 .PHONY: nuke
