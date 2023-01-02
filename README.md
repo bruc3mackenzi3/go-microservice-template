@@ -92,12 +92,12 @@ Precondition: kubectl is installed in your local environment, and connected to a
 
 First deploy the database:
 ```sh
-kubectl apply -f k8s-postgres.yaml
+kubectl apply -f service.postgres.yaml
 ```
 
 Next deploy the Users service:
 ```sh
-kubectl apply -f k8s-users.yaml
+kubectl apply -f service.users.yaml
 ```
 
 Tail application logs:
