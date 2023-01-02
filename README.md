@@ -129,6 +129,28 @@ Here is a diagram of the setup in Kuberenetes:
 ![alt text](./k8s.png)
 
 ## Developing
+### Kubernetes
+To run your changes in Kubernetes follow these steps:
+
+1. Log in to Docker
+```
+docker login -U username
+```
+
+2. Set `DOCKER_USERNAME` in `Makefile` to your Docker username
+
+3. Build and tag the Docker image
+```
+make d-build
+```
+
+4. Push the Docker image
+```
+make d-push
+```
+
+5. Deploy to Kubernetes with the instructions under "Running in Kubernetes" above
+
 ### Mocks
 Update a mock with the following command, e.g. for the `repository.Repository` interface:
 ```bash

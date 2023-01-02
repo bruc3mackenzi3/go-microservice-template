@@ -1,15 +1,17 @@
 GO := go
+DOCKER_USERNAME := bruc3mackenzi3
+
+PG_IMAGE = postgres:14
+PG_CONTAINER = postgres-db
+USERS_IMAGE = users
+USERS_CONTAINER = users
+USERS_PORT = 8080
+USERS_VERSION := 1.0
 
 PG_HOST = localhost
 PG_DB = microservice
 PG_USER = microservice
 PG_PASSWORD = example123
-
-PG_IMAGE = postgres:14
-USERS_IMAGE = users
-PG_CONTAINER = postgres-db
-USERS_CONTAINER = users
-USERS_PORT = 8080
 
 # help extracts the help texts for the comments following ': ##'
 .PHONY: help
@@ -49,6 +51,7 @@ stop-db:
 d-build:  ## Build app in Docker image
 	env GOOS=linux GOARCH=amd64 $(GO) build -o users-docker
 	docker build -t $(USERS_IMAGE):latest .
+	docker tag $(USERS_IMAGE) $(DOCKER_USERNAME)/$(USERS_IMAGE):$(USERS_VERSION)
 
 .PHONY: d-run
 d-run:  ## Run the Users application in a Docker Container; requires previous containers are stopped
@@ -68,6 +71,10 @@ start-debug:  ## Restart app in debug mode with Delve debugger
 .PHONY: test
 test:  ## Run test suite
 	$(GO) test -v ./...
+
+.PHONY: d-push
+d-push:  ## Push built Users image to public Docker repository.  Must be logged in to Docker.
+	docker push $(DOCKER_USERNAME)/$(USERS_IMAGE):$(USERS_VERSION)
 
 .PHONY: clean
 clean:  ## Clean project
