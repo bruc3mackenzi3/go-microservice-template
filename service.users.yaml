@@ -11,6 +11,11 @@ spec:
       ports:
         - containerPort: 8080
           name: users-http
+      livenessProbe:
+        httpGet:
+          path: /healthz
+          port: users-http
+        initialDelaySeconds: 2
       env:
         - name: POSTGRES_HOST
           value: postgres

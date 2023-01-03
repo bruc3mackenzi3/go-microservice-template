@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"net/http"
 
 	"github.com/bruc3mackenzi3/microservice-demo/config"
 	"github.com/bruc3mackenzi3/microservice-demo/handler"
@@ -13,10 +12,11 @@ import (
 
 func setupServer() {
 	e := echo.New()
-	e.GET("/", func(c echo.Context) error {
-		return c.String(http.StatusOK, "Hello, World!")
-	})
 
+	// Register Kubernetes Liveness Probe
+	e.GET("/healthz", handler.LivenessProbe)
+
+	// Register routes of User resource
 	handler.RegisterRoutes(e)
 
 	// Enabling the middleware logger makes Echo log each http request received
