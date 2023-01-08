@@ -9,12 +9,20 @@ A full-featured, production-ready microservice template for building application
 ![example workflow](https://github.com/bruc3mackenzi3/microservice-demo/actions/workflows/go-unit-tests.yaml/badge.svg)
 
 ## Tech Stack
-* Go
+* REST API for integrating with other services
+* A simple Users service implementing Create, Read, Update, Delete operations on a User resource
+  * This simple, generic service acts as a template from which other services can be built
+* Go 3rd Party Packages
   * [Echo web framework](https://github.com/labstack/echo)
   * [GORM ORM Library](https://github.com/go-gorm/gorm)
-  * [Testify](https://github.com/stretchr/testify) Assert and Mock packages
-  * golangci-lint with `.golangci.yml` config and VSCode `settings.json` integration
-* PostgreSQL 14 database
+  * [Validator package](https://pkg.go.dev/github.com/go-playground/validator/v10#section-readme) for easy validation of input parameters
+  * [Testify](https://github.com/stretchr/testify) Assert and Mock packages for more convenient unit testing
+  * [golangci-lint](https://golangci-lint.run/), a popular linter for the Go language
+    * Configured with `.golangci.yml` config
+    * VSCode Integration configured via  `.vscode/settings.json`
+* PostgreSQL database
+  * Database schema managed with [GORM Auto-migration](https://gorm.io/docs/migration.html)
+
 ### Development
 * Makefile for ease of operation
   * Encapsulates commands to build, run, test, clean, etc, the project
@@ -28,12 +36,17 @@ A full-featured, production-ready microservice template for building application
   * OpenAPI doc hosted with GitHub Pages
   * Workflow Status Badge showing CI build status
 * Docs
-  * README
+  * README.md
   * OpenAPI definition documenting REST API, hosted with GitHub Pages
+
 ### Deployment
 * CI configured using GitHub Actions
+  * This validates changes on every push by building & testing the source code
 * Docker for containerizing the application
+  * A minimalist base image, `gcr.io/distroless/base-debian10`, is used to keep the build image small
+  * Push the image using Docker's public image library.  A free Docker account is required. 
 * Kubernetes for deploying the containerized application
+  * Objects are defined in Kubernetes manifest files
 
 ## Getting Started
 Fetch Go dependencies
@@ -135,7 +148,7 @@ kubectl delete pod postgres users
 ```
 
 Here's how the architecture within Kuberenetes looks:
-![alt text](./k8s.png)
+![alt text](docs/k8s.png)
 
 ## Developing
 ### Kubernetes
@@ -153,7 +166,7 @@ docker login -U username
 make d-build
 ```
 
-4. Push the Docker image
+4. Push the Docker image to 
 ```
 make d-push
 ```
@@ -190,6 +203,7 @@ For more information on GitHub Pages, [see this getting started page](https://do
   * PR workflow
     * Require PR for main merge?
     * Block PR merge on CICD passing
+* API endpoint implementing pagination
 * Cloud deployment
 * Integration tests
 * Inter-service communication e.g. with gRPC
