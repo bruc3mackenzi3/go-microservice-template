@@ -1,10 +1,10 @@
-# go-microservice-template
+# Go Microservice Template
 
 A full-featured, production-ready microservice template for building applications in Go.  Includes a Users microservice exposing a REST API providing functionality to perform CRUD operations on the resource.
 
 [Fork this project](https://github.com/bruc3mackenzi3/go-microservice-template/fork) to start building your own REST-based microservice application.
 
-![example workflow](https://github.com/bruc3mackenzi3/microservice-demo/actions/workflows/go.yml/badge.svg)
+![example workflow](https://github.com/bruc3mackenzi3/microservice-demo/actions/workflows/go-unit-tests.yaml/badge.svg)
 
 ## Tech Stack
 * Makefile for ease of operation
@@ -17,14 +17,18 @@ A full-featured, production-ready microservice template for building application
 * PostgreSQL 14 database
 * Docker for containerizing the application
 * Kubernetes for deploying the containerized application
+* CI configured using GitHub Actions
 * VSCode Integration
   * `launch.json` configurations for:
     * Debugging native application
     * Debugging in Docker container using [Delve debugger](https://github.com/go-delve/delve)
-* GitHub Actions to run build & tests
+  * `settings.json` configuring VSCode to use golangci-lint
+* GitHub Integrations
+  * GitHub Actions to run build & tests
+  * OpenAPI doc hosted with GitHub Pages
 * Docs
   * README
-  * OpenAPI definition documenting REST API
+  * OpenAPI definition documenting REST API, hosted with GitHub Pages
 
 ## Getting Started
 Fetch Go dependencies
@@ -125,7 +129,7 @@ kubectl delete service postgres users
 kubectl delete pod postgres users
 ```
 
-Here is a diagram of the setup in Kuberenetes:
+Here's how the architecture within Kuberenetes looks:
 ![alt text](./k8s.png)
 
 ## Developing
@@ -158,8 +162,18 @@ cd repository/
 mockery --name Repository --inpackage --outpkg=mock_Repository.go
 ```
 
+### OpenAPI
+The Users API is documented with OpenAPI.  The OpenAPI document is located at [docs/openapi.yaml](docs/openapi.yaml).
+
+There are tools for automating the creation of an OpenAPI document for an API.  The document for this API is updated manually at this time.
+
+A human-readable rendering is hosted with GitHub pages at [github.com/bruc3mackenzi3/go-microservice-template](https://github.com/bruc3mackenzi3/go-microservice-template).  This is enabled in the GitHub repository settings.
+
+For more information on working with OpenAPI, [see the official documentation](https://oai.github.io/Documentation/start-here.html).
+
+For more information on GitHub Pages, [see this getting started page](https://docs.github.com/en/pages/getting-started-with-github-pages/creating-a-github-pages-site).
+
 ## ToDo
-* Host OpenAPI @ github.io
 * BUG: Docker app cannot connect to DB - likely needs a Docker network configured
 * Logging
 * Context
@@ -168,4 +182,8 @@ mockery --name Repository --inpackage --outpkg=mock_Repository.go
 * Inter-service communication e.g. with gRPC
 * (CICD)[https://docs.docker.com/language/golang/configure-ci-cd/]
 * GitHub integrations
+  * Add Go lint step to CICD.  Additional steps?
+  * PR workflow
+    * Require PR for main merge?
+    * Block PR merge on CICD passing
 * Cloud deployment
