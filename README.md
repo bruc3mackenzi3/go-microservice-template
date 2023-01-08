@@ -159,13 +159,13 @@ mockery --name Repository --inpackage --outpkg=mock_Repository.go
 ```
 
 ## ToDo
+* Host OpenAPI @ github.io
 * BUG: Docker app cannot connect to DB - likely needs a Docker network configured
-* Graceful shutdown (should entail catching SIGTERM, disconnecting from DB & exiting)
 * Logging
 * Context
 * Integration tests
 * Test line coverage report
-* Interservice communication e.g. with gRPC
+* Inter-service communication e.g. with gRPC
 * (CICD)[https://docs.docker.com/language/golang/configure-ci-cd/]
 * GitHub integrations
 * Cloud deployment

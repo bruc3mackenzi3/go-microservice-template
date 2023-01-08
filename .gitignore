@@ -1,5 +1,4 @@
 .vscode/*.log
 vendor/
-microservice-demo
-microservice-demo.exe
+users
 users-docker

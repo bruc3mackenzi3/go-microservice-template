@@ -1,4 +1,8 @@
-GO := go
+# Set go executable
+# override this variable with an environment variable to run against another version of Go, e.g.:
+# make GO=go1.19.4 build
+GO = go
+
 DOCKER_USERNAME := bruc3mackenzi3
 
 PG_IMAGE = postgres:14
@@ -32,7 +36,7 @@ init:  ## Fetch Go dependencies; Download Postgres Docker Image
 
 .PHONY: build
 build:  ## Compile Go program
-	$(GO) build -v
+	$(GO) build -v -o users
 
 .PHONY: start-db
 start-db:  ## Start the Postgres Database

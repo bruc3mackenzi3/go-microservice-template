@@ -5,20 +5,20 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Launch Microservice",
+            "name": "Launch Users Service",
             "type": "go",
             "request": "launch",
             "mode": "debug",
             "program": "main.go",
             "env": {
-                "PGHOST": "localhost",
-                "PGDB": "microservice",
-                "PGUSER": "microservice",
-                "PGPASSWORD": "example123"
+                "POSTGRES_HOST": "localhost",
+                "POSTGRES_DB": "microservice",
+                "POSTGRES_USER": "microservice",
+                "POSTGRES_PASSWORD": "example123"
             }
         },
         {
-            "name": "Remote Microservice",
+            "name": "Remote Users Service",
             "type": "go",
             "request": "attach",
             "mode": "remote",

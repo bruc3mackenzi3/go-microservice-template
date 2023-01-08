@@ -1,7 +1,12 @@
 package main
 
 import (
+	"context"
 	"fmt"
+	"os"
+	"os/signal"
+	"syscall"
+	"time"
 
 	"github.com/bruc3mackenzi3/microservice-demo/config"
 	"github.com/bruc3mackenzi3/microservice-demo/handler"
@@ -10,7 +15,7 @@ import (
 	"github.com/labstack/gommon/log"
 )
 
-func setupServer() {
+func initServer() *echo.Echo {
 	e := echo.New()
 
 	// Register Kubernetes Liveness Probe
@@ -36,14 +41,43 @@ func setupServer() {
 
 	e.Logger.SetLevel(log.DEBUG)
 
+	e.Logger.Infof("Starting web server on port %d...\n", config.Port)
+
+	return e
+}
+
+func startServer(e *echo.Echo) {
 	err := e.Start(fmt.Sprintf(":%d", config.Port))
 	if err != nil {
-		e.Logger.Fatal(err)
+		e.Logger.Warnf("Echo server stopped and returned an error: %v", err)
+	}
+}
+
+// catchSignal listens on a channel for interrupts, and gracefully shuts down the web server
+// before terminating the application.  It listens for the following signals:
+// - SIGINT, which is sent from the terminal by a user hitting CTRL + C
+// - SIGTERM, which is sent by Docker when terminating the container
+func catchSignal(e *echo.Echo) {
+	signalChan := make(chan os.Signal, 1)
+	signal.Notify(signalChan, syscall.SIGINT, syscall.SIGTERM)
+
+	signal := <-signalChan
+	e.Logger.Infof("Received signal %v, shutting down server...", signal)
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+	if err := e.Shutdown(ctx); err != nil {
+		e.Logger.Error("Echo Shutdown encountered an error:", err)
+	} else {
+		e.Logger.Info("Server successfully shutdown gracefully!")
 	}
 }
 
 func main() {
-	fmt.Printf("Starting web server on port %d...\n", config.Port)
+	e := initServer()
 
-	setupServer()
+	// Start Echo web server in a separate Goroutine
+	go startServer(e)
+
+	// Block on catching shutdown signals in the main thread
+	catchSignal(e)
 }
