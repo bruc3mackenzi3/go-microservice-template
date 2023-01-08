@@ -2,22 +2,22 @@
 
 A full-featured, production-ready microservice template for building applications in Go.  Includes a Users microservice exposing a REST API providing functionality to perform CRUD operations on the resource.
 
+[View the API's OpenAPI Documentation here](https://bruc3mackenzi3.github.io/go-microservice-template/#/)
+
 [Fork this project](https://github.com/bruc3mackenzi3/go-microservice-template/fork) to start building your own REST-based microservice application.
 
 ![example workflow](https://github.com/bruc3mackenzi3/microservice-demo/actions/workflows/go-unit-tests.yaml/badge.svg)
 
 ## Tech Stack
-* Makefile for ease of operation
-  * Encapsulates commands to build, run, test, clean, etc, the project
 * Go
   * [Echo web framework](https://github.com/labstack/echo)
   * [GORM ORM Library](https://github.com/go-gorm/gorm)
   * [Testify](https://github.com/stretchr/testify) Assert and Mock packages
   * golangci-lint with `.golangci.yml` config and VSCode `settings.json` integration
 * PostgreSQL 14 database
-* Docker for containerizing the application
-* Kubernetes for deploying the containerized application
-* CI configured using GitHub Actions
+### Development
+* Makefile for ease of operation
+  * Encapsulates commands to build, run, test, clean, etc, the project
 * VSCode Integration
   * `launch.json` configurations for:
     * Debugging native application
@@ -26,9 +26,14 @@ A full-featured, production-ready microservice template for building application
 * GitHub Integrations
   * GitHub Actions to run build & tests
   * OpenAPI doc hosted with GitHub Pages
+  * Workflow Status Badge showing CI build status
 * Docs
   * README
   * OpenAPI definition documenting REST API, hosted with GitHub Pages
+### Deployment
+* CI configured using GitHub Actions
+* Docker for containerizing the application
+* Kubernetes for deploying the containerized application
 
 ## Getting Started
 Fetch Go dependencies
@@ -175,15 +180,18 @@ For more information on GitHub Pages, [see this getting started page](https://do
 
 ## ToDo
 * BUG: Docker app cannot connect to DB - likely needs a Docker network configured
-* Logging
-* Context
-* Integration tests
-* Test line coverage report
-* Inter-service communication e.g. with gRPC
-* (CICD)[https://docs.docker.com/language/golang/configure-ci-cd/]
+* Better document API calls
+  * Embed CURL commands in README
+  * Add Postman Collection
 * GitHub integrations
-  * Add Go lint step to CICD.  Additional steps?
+  * CI build with GitHub Actions
+    * Add Go lint step to CI.  Additional steps?
+    * Test line coverage report
   * PR workflow
     * Require PR for main merge?
     * Block PR merge on CICD passing
 * Cloud deployment
+* Integration tests
+* Inter-service communication e.g. with gRPC
+* Logging
+* Context
