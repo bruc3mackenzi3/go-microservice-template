@@ -17,11 +17,3 @@ var (
 	ErrUserNotFound   = errors.New("user not found")
 	ErrUserEmailTaken = errors.New("email already taken")
 )
-
-type NotFoundError struct {
-	error
-}
-
-func NewNotFoundError(s string) NotFoundError {
-	return NotFoundError{errors.New(s)}
-}

@@ -1,7 +1,6 @@
 package service
 
 import (
-	"fmt"
 	"testing"
 
 	"github.com/bruc3mackenzi3/microservice-demo/model"
@@ -26,12 +25,12 @@ func TestGetUser(t *testing.T) {
 	})
 
 	t.Run("error response", func(t *testing.T) {
-		testError := model.NewNotFoundError(fmt.Sprintf("User %d not found", testID))
-		mockRepo.On("SelectUser", testID).Return(nil, testError).Once()
+		// testError := model.NewNotFoundError(fmt.Sprintf("User %d not found", testID))
+		mockRepo.On("SelectUser", testID).Return(nil, model.ErrUserNotFound).Once()
 
 		actualUser, err := userService.GetUser(testID)
 
-		assert.Equal(t, testError, err)
+		assert.Equal(t, model.ErrUserNotFound, err)
 		assert.Nil(t, actualUser)
 	})
 }

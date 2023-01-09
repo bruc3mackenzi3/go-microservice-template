@@ -13,11 +13,11 @@ import (
 )
 
 var validate *validator.Validate
-var mService service.Service
+var userService service.Service
 
 func init() {
 	validate = validator.New()
-	mService = service.NewService(repository.NewRepository())
+	userService = service.NewService(repository.NewRepository())
 }
 
 type UserRequest struct {
@@ -68,13 +68,12 @@ func postUser(c echo.Context) error {
 
 	user := newUserFromRequest(rUser, 0)
 
-	err = mService.CreateUser(&user)
+	err = userService.CreateUser(&user)
 	if err == model.ErrUserEmailTaken {
 		c.Logger().Warnf("Cannot create user, email %s already taken", user.Email)
 		r := errorResponse{http.StatusBadRequest, "email already taken"}
 		return c.JSON(r.Status, r)
-	}
-	if err != nil {
+	} else if err != nil {
 		c.Logger().Error("Failed to create user: ", err)
 		r := errorResponse{http.StatusInternalServerError, "server error occured"}
 		return c.JSON(r.Status, r)
@@ -92,16 +91,19 @@ func getUser(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, errorResponse{http.StatusBadRequest, "bad user ID"})
 	}
 
-	user, err := mService.GetUser(userID)
+	user, err := userService.GetUser(userID)
 	if err != nil {
 		var r errorResponse
 		if err == model.ErrUserNotFound {
+			c.Logger().Warnf("User %s not found: %v", userID, err)
 			r = errorResponse{http.StatusNotFound, "user not found"}
 		} else if err != nil {
+			c.Logger().Error("Failed to get User:", err)
 			r = errorResponse{http.StatusInternalServerError, "server error occured"}
 		}
 		return c.JSON(r.Status, r)
 	}
+	c.Logger().Infof("Retrieved User %+v", user)
 
 	response := newUserResponseFromModel(user)
 	return c.JSON(http.StatusOK, response)
@@ -135,8 +137,9 @@ func putUser(c echo.Context) error {
 
 	user := newUserFromRequest(rUser, userID)
 
-	err = mService.UpdateUser(&user)
+	err = userService.UpdateUser(&user)
 	if err == model.ErrUserNotFound {
+		c.Logger().Warnf("User %s not found: %v", userID, err)
 		r := errorResponse{http.StatusNotFound, "user not found"}
 		return c.JSON(r.Status, r)
 	} else if err == model.ErrUserEmailTaken {
@@ -162,26 +165,20 @@ func deleteUser(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, errorResponse{http.StatusBadRequest, "bad user ID"})
 	}
 
-	err = mService.DeleteUser(userID)
+	err = userService.DeleteUser(userID)
 	if err != nil {
 		var r errorResponse
 		if err == model.ErrUserNotFound {
+			c.Logger().Warnf("User %s not found: %v", userID, err)
 			r = errorResponse{http.StatusNotFound, "user not found"}
 		} else if err != nil {
+			c.Logger().Error("Failed to delete User: ", err)
 			r = errorResponse{http.StatusInternalServerError, "server error occured"}
 		}
 		return c.JSON(r.Status, r)
 	}
 
 	return c.NoContent(http.StatusOK)
-}
-
-func parseID(idParam string) (uint, *errorResponse) {
-	id, err := strconv.ParseUint(idParam, 10, 64)
-	if err != nil || id < 0 {
-		return 0, &errorResponse{http.StatusBadRequest, "id must be an unsigned integer"}
-	}
-	return uint(id), nil
 }
 
 func newUserFromRequest(rUser UserRequest, userID uint) model.User {

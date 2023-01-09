@@ -45,11 +45,8 @@ func (s *service) CreateUser(user *model.User) error {
 func (s *service) GetUser(id uint) (*model.User, error) {
 	user, err := s.r.SelectUser(id)
 	if err != nil {
-		fmt.Printf("Error getting user with id=%d: %v\n", id, err)
 		return nil, err
 	}
-	fmt.Printf("Got user: %+v\n", user)
-
 	return user, nil
 }
 
