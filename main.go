@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
+	"net"
 	"os"
 	"os/signal"
 	"syscall"
@@ -49,7 +50,12 @@ func initServer() *echo.Echo {
 func startServer(e *echo.Echo) {
 	err := e.Start(fmt.Sprintf(":%d", config.Port))
 	if err != nil {
-		e.Logger.Warnf("Echo server stopped and returned an error: %v", err)
+		e.Logger.Warnf("Echo server stopped and returned an error: %T %+v", err, err)
+	}
+	_, ok := err.(*net.OpError)
+	if ok {
+		e.Logger.Errorf("Exiting application")
+		os.Exit(1)
 	}
 }
 
