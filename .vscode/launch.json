@@ -10,12 +10,7 @@
             "request": "launch",
             "mode": "debug",
             "program": "main.go",
-            "env": {
-                "POSTGRES_HOST": "localhost",
-                "POSTGRES_DB": "microservice",
-                "POSTGRES_USER": "microservice",
-                "POSTGRES_PASSWORD": "example123"
-            }
+            "envFile": "${workspaceFolder}/.env",
         },
         {
             "name": "Remote Users Service",
