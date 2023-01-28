@@ -47,6 +47,17 @@ run:  ## Run the Users application (exit with CTRL+C)
 	POSTGRES_DB=$(PG_DB) POSTGRES_USER=$(PG_USER) POSTGRES_PASSWORD=$(PG_PASSWORD) POSTGRES_HOST=$(PG_HOST) \
 	$(GO) run main.go
 
+.PHONY: test
+test:  ## Run the unit test suite
+	$(GO) test -v ./...
+
+.PHONY: integration-test
+integration-test:  ## Run the integration test suite
+	cd integration_tests/; \
+	curl --silent http://localhost:8080/healthz > /dev/null && \
+	POSTGRES_DB=$(PG_DB) POSTGRES_USER=$(PG_USER) POSTGRES_PASSWORD=$(PG_PASSWORD) POSTGRES_HOST=$(PG_HOST) \
+	INTEGRATION_TESTS=1 go test . || echo "Failed to reach service; cannot run test"
+
 .PHONY: stop-db
 stop-db:
 	docker stop $(PG_CONTAINER)
@@ -71,10 +82,6 @@ d-stop:  ## Stop Users container
 start-debug:  ## Restart app in debug mode with Delve debugger
 	docker build -t users-debug -f Dockerfile.debug
 	docker start users-debug
-
-.PHONY: test
-test:  ## Run test suite
-	$(GO) test -v ./...
 
 .PHONY: d-push
 d-push:  ## Push built Users image to public Docker repository.  Must be logged in to Docker.

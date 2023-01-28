@@ -2,5 +2,9 @@
     "go.lintTool": "golangci-lint",
     "go.lintFlags": [
         "--fast"
-    ]
+    ],
+    "go.testEnvVars": {
+        "INTEGRATION_TESTS": "true"
+    },
+    "go.testEnvFile": "${workspaceFolder}/.env"
 }

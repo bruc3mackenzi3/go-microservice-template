@@ -214,6 +214,7 @@ For more information on GitHub Pages, [see this getting started page](https://do
   * PR workflow
     * Require PR for main merge?
     * Block PR merge on CICD passing
+* Replace env variables in Makefile with .env file
 * API endpoint implementing pagination
 * Inter-service communication e.g. with gRPC
 * Logging
