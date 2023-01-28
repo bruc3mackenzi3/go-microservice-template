@@ -10,6 +10,7 @@ import (
 type Service interface {
 	CreateUser(user *model.User) error
 	GetUser(id uint) (*model.User, error)
+	GetUsers() ([]model.User, error)
 	UpdateUser(user *model.User) error
 	DeleteUser(id uint) error
 }
@@ -48,6 +49,14 @@ func (s *service) GetUser(id uint) (*model.User, error) {
 		return nil, err
 	}
 	return user, nil
+}
+
+func (s *service) GetUsers() ([]model.User, error) {
+	users, err := s.r.SelectUsers()
+	if err != nil {
+		return nil, err
+	}
+	return users, nil
 }
 
 func (s *service) UpdateUser(user *model.User) error {

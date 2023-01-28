@@ -10,6 +10,7 @@ func RegisterRoutes(e *echo.Echo) {
 
 	g.POST("/", postUser)
 	g.GET("/:id", getUser)
+	g.GET("/", getUsers)
 	g.PUT("/:id", putUser)
 	g.DELETE("/:id", deleteUser)
 }

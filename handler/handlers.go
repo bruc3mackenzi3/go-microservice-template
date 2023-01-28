@@ -109,6 +109,26 @@ func getUser(c echo.Context) error {
 	return c.JSON(http.StatusOK, response)
 }
 
+func getUsers(c echo.Context) error {
+	users, err := userService.GetUsers()
+	if err != nil {
+		var r errorResponse
+		if err != nil {
+			c.Logger().Error("Failed to get User:", err)
+			r = errorResponse{http.StatusInternalServerError, "server error occured"}
+		}
+		return c.JSON(r.Status, r)
+	}
+	c.Logger().Infof("Retrieved Users %+v", users)
+
+	var response []userResponse
+	for _, u := range users {
+		response = append(response, newUserResponseFromModel(&u))
+	}
+
+	return c.JSON(http.StatusOK, response)
+}
+
 func putUser(c echo.Context) error {
 	var userID uint
 	err := echo.PathParamsBinder(c).Uint("id", &userID).BindError()

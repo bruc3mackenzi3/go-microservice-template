@@ -15,6 +15,7 @@ type Repository interface {
 	InsertUser(user *model.User) error
 	SelectUser(id uint) (*model.User, error)
 	SelectUserByEmail(email string) (*model.User, error)
+	SelectUsers() ([]model.User, error)
 	UpdateUser(user *model.User) error
 	DeleteUser(id uint) error
 }
@@ -75,6 +76,22 @@ func (r *repository) SelectUser(id uint) (*model.User, error) {
 		return nil, errors.New("failed to select user")
 	}
 	return &user, nil
+}
+
+func (r *repository) SelectUsers() ([]model.User, error) {
+	var users []model.User
+	result := r.db.Find(&users)
+
+	if result.Error != nil {
+		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+			fmt.Println("No users found")
+			return users, nil
+		}
+
+		fmt.Println("Failure running query to select user in database:", result.Error)
+		return nil, errors.New("failed to select user")
+	}
+	return users, nil
 }
 
 func (r *repository) SelectUserByEmail(email string) (*model.User, error) {
