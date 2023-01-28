@@ -6,7 +6,8 @@ A full-featured, production-ready, containerized microservice template for build
 
 [Fork this project](https://github.com/bruc3mackenzi3/go-microservice-template/fork) to start building your own REST-based microservice application.
 
-![example workflow](https://github.com/bruc3mackenzi3/microservice-demo/actions/workflows/go-unit-tests.yaml/badge.svg)
+![Unit test badge](https://github.com/bruc3mackenzi3/microservice-demo/actions/workflows/go-unit-tests.yaml/badge.svg)
+![Integration test badge](https://github.com/bruc3mackenzi3/microservice-demo/actions/workflows/go-integration-tests.yaml/badge.svg)
 
 ## Prerequisites
 - Local Go installation, ideally the same version in `go.mod`

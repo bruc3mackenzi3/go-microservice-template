@@ -1,0 +1,52 @@
+name: Integration Tests
+
+on: [push, pull_request]
+
+jobs:
+  # Label of the container job
+  integration-test:
+    # Containers must run in Linux based operating systems
+    runs-on: ubuntu-latest
+
+    # Service containers to run with `integration-test`
+    services:
+      # Label is used as the hostname within the Docker network
+      # Note the Go app will connect with localhost because it's run on the host machine directly,
+      # but if running in Docker it would connect with the postgres hostname
+      postgres:
+        # Docker Hub image
+        image: postgres:14
+        # Provide the password for postgres
+        env:
+          POSTGRES_DB: microservice
+          POSTGRES_USER: microservice
+          POSTGRES_PASSWORD: example123
+        # Set health checks to wait until postgres has started
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          # Maps tcp port 5432 on service container to the host
+          - 5432:5432
+
+    steps:
+      # Downloads a copy of the code in your repository before running CI tests
+      - name: Check out repository code
+        uses: actions/checkout@v3
+
+      # Installs the specified Go version
+      - name: Install Go
+        uses: actions/setup-go@v3
+        with:
+          go-version: 1.19
+
+      # Builds the application
+      - name: Build
+        run: make build
+
+      - name: Run and test application
+        # Runs the Users application in the background, then runs integration tests.
+        # This allows the shell command to return and the step to complete.
+        run: make run & make integration-test
