@@ -13,7 +13,7 @@ func TestGetUser(t *testing.T) {
 	testUser := model.User{Name: "Abraham"}
 
 	mockRepo := &repository.MockRepository{}
-	userService := NewService(mockRepo)
+	userService := NewUserService(mockRepo)
 
 	t.Run("successful response", func(t *testing.T) {
 		mockRepo.On("SelectUser", testID).Return(&testUser, nil).Once()

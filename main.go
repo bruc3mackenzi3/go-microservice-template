@@ -25,7 +25,7 @@ func initServer() *echo.Echo {
 	e.GET("/healthz", handler.LivenessProbe)
 
 	// Register routes of User resource
-	userService := service.NewService(repository.NewRepository())
+	userService := service.NewUserService(repository.NewRepository())
 	handler.RegisterRoutes(e, userService)
 
 	// Enabling the middleware logger makes Echo log each http request received

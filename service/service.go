@@ -7,7 +7,7 @@ import (
 	"github.com/bruc3mackenzi3/microservice-demo/repository"
 )
 
-type Service interface {
+type UserService interface {
 	CreateUser(user *model.User) error
 	GetUser(id uint) (*model.User, error)
 	GetUsers() ([]model.User, error)
@@ -15,17 +15,17 @@ type Service interface {
 	DeleteUser(id uint) error
 }
 
-type service struct {
+type userService struct {
 	r repository.Repository
 }
 
-func NewService(r repository.Repository) Service {
-	return &service{
+func NewUserService(r repository.Repository) UserService {
+	return &userService{
 		r: r,
 	}
 }
 
-func (s *service) CreateUser(user *model.User) error {
+func (s *userService) CreateUser(user *model.User) error {
 	// Check if email is in use by an existing user
 	_, err := s.r.SelectUserByEmail(user.Email)
 	if err == nil {
@@ -43,7 +43,7 @@ func (s *service) CreateUser(user *model.User) error {
 	return nil
 }
 
-func (s *service) GetUser(id uint) (*model.User, error) {
+func (s *userService) GetUser(id uint) (*model.User, error) {
 	user, err := s.r.SelectUser(id)
 	if err != nil {
 		return nil, err
@@ -51,7 +51,7 @@ func (s *service) GetUser(id uint) (*model.User, error) {
 	return user, nil
 }
 
-func (s *service) GetUsers() ([]model.User, error) {
+func (s *userService) GetUsers() ([]model.User, error) {
 	users, err := s.r.SelectUsers()
 	if err != nil {
 		return nil, err
@@ -59,7 +59,7 @@ func (s *service) GetUsers() ([]model.User, error) {
 	return users, nil
 }
 
-func (s *service) UpdateUser(user *model.User) error {
+func (s *userService) UpdateUser(user *model.User) error {
 	// Check if email is in use by another user
 	existingUser, err := s.r.SelectUserByEmail(user.Email)
 	if existingUser != nil && user.ID != existingUser.ID && err == nil {
@@ -77,7 +77,7 @@ func (s *service) UpdateUser(user *model.User) error {
 	return nil
 }
 
-func (s *service) DeleteUser(id uint) error {
+func (s *userService) DeleteUser(id uint) error {
 	err := s.r.DeleteUser(id)
 	if err != nil {
 		return err

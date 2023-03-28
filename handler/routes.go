@@ -7,7 +7,7 @@ import (
 
 const usersPath = "/v1/users"
 
-func RegisterRoutes(e *echo.Echo, s service.Service) {
+func RegisterRoutes(e *echo.Echo, s service.UserService) {
 	g := e.Group(usersPath)
 	// TODO: add middleware to the group
 

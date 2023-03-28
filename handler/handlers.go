@@ -44,7 +44,7 @@ func newUserResponseFromModel(u *model.User) userResponse {
 	}
 }
 
-func postUser(s service.Service) echo.HandlerFunc {
+func postUser(s service.UserService) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		var rUser UserRequest
 
@@ -82,7 +82,7 @@ func postUser(s service.Service) echo.HandlerFunc {
 	}
 }
 
-func getUser(s service.Service) echo.HandlerFunc {
+func getUser(s service.UserService) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		var userID uint
 		err := echo.PathParamsBinder(c).Uint("id", &userID).BindError()
@@ -110,7 +110,7 @@ func getUser(s service.Service) echo.HandlerFunc {
 	}
 }
 
-func getUsers(s service.Service) echo.HandlerFunc {
+func getUsers(s service.UserService) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		users, err := s.GetUsers()
 		if err != nil {
@@ -132,7 +132,7 @@ func getUsers(s service.Service) echo.HandlerFunc {
 	}
 }
 
-func putUser(s service.Service) echo.HandlerFunc {
+func putUser(s service.UserService) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		var userID uint
 		err := echo.PathParamsBinder(c).Uint("id", &userID).BindError()
@@ -182,7 +182,7 @@ func putUser(s service.Service) echo.HandlerFunc {
 	}
 }
 
-func deleteUser(s service.Service) echo.HandlerFunc {
+func deleteUser(s service.UserService) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		var userID uint
 		err := echo.PathParamsBinder(c).Uint("id", &userID).BindError()
