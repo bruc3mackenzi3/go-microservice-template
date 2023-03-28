@@ -11,6 +11,8 @@ import (
 
 	"github.com/bruc3mackenzi3/microservice-demo/config"
 	"github.com/bruc3mackenzi3/microservice-demo/handler"
+	"github.com/bruc3mackenzi3/microservice-demo/repository"
+	"github.com/bruc3mackenzi3/microservice-demo/service"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/labstack/gommon/log"
@@ -19,11 +21,12 @@ import (
 func initServer() *echo.Echo {
 	e := echo.New()
 
-	// Register Kubernetes Liveness Probe
+	// Register Liveness Probe - used by Kubernetes
 	e.GET("/healthz", handler.LivenessProbe)
 
 	// Register routes of User resource
-	handler.RegisterRoutes(e)
+	userService := service.NewService(repository.NewRepository())
+	handler.RegisterRoutes(e, userService)
 
 	// Enabling the middleware logger makes Echo log each http request received
 	// e.Use(middleware.Logger())
