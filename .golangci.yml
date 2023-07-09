@@ -41,8 +41,11 @@ linters:
     - deadcode
     - depguard
     - dogsled
+    - dupl
     - errcheck
+    - exportloopref
     - funlen
+    - gochecknoglobals
     - goconst
     - gocritic
     - gocyclo
@@ -50,16 +53,15 @@ linters:
     - goimports
     - gosec
     - gosimple
-    - exportloopref
-    - revive
     - govet
     - ineffassign
+    - ireturn
     - nakedret
+    - revive
     - staticcheck
-    - structcheck
     - stylecheck
+    - tparallel
     - typecheck
     - unconvert
+    - unparam
     - unused
-    - varcheck
-    - dupl
